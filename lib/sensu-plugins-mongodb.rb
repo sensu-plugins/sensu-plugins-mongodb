@@ -1,7 +1,15 @@
+
+require 'sensu-plugins-mongodb/version'
+
+# Load the defaults
+
 #
-# Set gem version
+# Default class
 #
-module SensuPluginsMongodb
-  # Gem version
-  VERSION = '0.0.1.alpha.1'
+module SensuPluginsMongoDB
+  class << self
+  end
+
+  class << self
+  end
 end

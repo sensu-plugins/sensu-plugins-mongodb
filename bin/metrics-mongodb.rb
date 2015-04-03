@@ -1,6 +1,6 @@
 #! /usr/bin/env ruby
 #
-#   mongodb-metrics
+#   metrics-mongodb.rb
 #
 # DESCRIPTION:
 #
@@ -26,11 +26,13 @@
 #   for details.
 #
 
-require 'rubygems' if RUBY_VERSION < '1.9.0'
 require 'sensu-plugin/metric/cli'
 require 'mongo'
 include Mongo
 
+#
+# Mongodb
+#
 class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
   option :host,
          description: 'MongoDB host',
@@ -58,7 +60,7 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
          short: '-s SCHEME',
          default: "#{Socket.gethostname}.mongodb"
 
-  def run
+  def run # rubocop:disable all
     host = config[:host]
     port = config[:port]
     db_name = 'admin'
@@ -87,9 +89,9 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
     end
   end
 
-  def gather_replication_metrics(server_status)
+  def gather_replication_metrics(server_status) # rubocop:disable all
     server_metrics = {}
-    server_metrics['lock.ratio'] = "#{sprintf('%.5f', server_status['globalLock']['ratio'])}" unless server_status['globalLock']['ratio'].nil?
+    server_metrics['lock.ratio'] = "#{sprintf('%.5f', server_status['globalLock']['ratio'])}" unless server_status['globalLock']['ratio'].nil? # rubocop:disable all
 
     server_metrics['lock.queue.total'] = server_status['globalLock']['currentQueue']['total']
     server_metrics['lock.queue.readers'] = server_status['globalLock']['currentQueue']['readers']
@@ -99,11 +101,11 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
     server_metrics['connections.available'] = server_status['connections']['available']
 
     if server_status['indexCounters']['btree'].nil?
-      server_metrics['indexes.missRatio'] = "#{sprintf('%.5f', server_status['indexCounters']['missRatio'])}"
+      server_metrics['indexes.missRatio'] = "#{sprintf('%.5f', server_status['indexCounters']['missRatio'])}" # rubocop:disable all
       server_metrics['indexes.hits'] = server_status['indexCounters']['hits']
       server_metrics['indexes.misses'] = server_status['indexCounters']['misses']
     else
-      server_metrics['indexes.missRatio'] = "#{sprintf('%.5f', server_status['indexCounters']['btree']['missRatio'])}"
+      server_metrics['indexes.missRatio'] = "#{sprintf('%.5f', server_status['indexCounters']['btree']['missRatio'])}" # rubocop:disable all
       server_metrics['indexes.hits'] = server_status['indexCounters']['btree']['hits']
       server_metrics['indexes.misses'] = server_status['indexCounters']['btree']['misses']
     end
