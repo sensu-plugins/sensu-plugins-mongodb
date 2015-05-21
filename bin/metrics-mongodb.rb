@@ -33,6 +33,7 @@ include Mongo
 #
 # Mongodb
 #
+
 class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
   option :host,
          description: 'MongoDB host',
