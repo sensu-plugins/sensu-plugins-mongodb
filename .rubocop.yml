@@ -24,7 +24,7 @@ IfUnlessModifier:
   Enabled: false
 
 RegexpLiteral:
- Enabled: false
+  Enabled: false
 
 Style/Documentation:
   Enabled: false
