@@ -38,7 +38,9 @@ Gem::Specification.new do |s|
   s.version                = SensuPluginsMongoDB::Version::VER_STRING
 
   s.add_runtime_dependency 'sensu-plugin',      '1.2.0'
-  s.add_runtime_dependency 'mongo',             '2.0.4'
+  s.add_runtime_dependency 'mongo',             '1.9.2'
+  s.add_runtime_dependency 'bson_ext',          '1.9.2'
+  s.add_runtime_dependency 'bson',              '1.9.2'
 
   s.add_development_dependency 'codeclimate-test-reporter', '~> 0.4'
   s.add_development_dependency 'rubocop',                   '0.30'
