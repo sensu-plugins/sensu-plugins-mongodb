@@ -63,7 +63,7 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
          short: '-s SCHEME',
          default: "#{Socket.gethostname}.mongodb"
 
-  def run # rubocop:disable all
+  def run
     host = config[:host]
     port = config[:port]
     db_name = 'admin'
