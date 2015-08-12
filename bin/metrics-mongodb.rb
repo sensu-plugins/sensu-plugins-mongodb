@@ -13,6 +13,8 @@
 # DEPENDENCIES:
 #   gem: sensu-plugin
 #   gem: mongo
+#   gem: bson
+#   gem: bson_ext
 #
 # USAGE:
 #   #YELLOW
