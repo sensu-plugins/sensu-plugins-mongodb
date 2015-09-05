@@ -5,6 +5,10 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 
 ## Unreleased
 
+## [0.0.5] - 2015-09-04
+### Fixed
+- Fixed non ssl mongo connections
+
 ## [0.0.4] - 2015-08-12
 ### Changed
 - general gem cleanup
