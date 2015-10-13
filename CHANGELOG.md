@@ -5,6 +5,12 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 
 ## Unreleased
 
+## [0.0.6] - 2015-10-13
+### Fixed
+- Rename option to avoid naming conflict with class variable name
+- Add message for replica set state 9 (rollback)
+- Installation fix
+
 ## [0.0.5] - 2015-09-04
 ### Fixed
 - Fixed non ssl mongo connections
