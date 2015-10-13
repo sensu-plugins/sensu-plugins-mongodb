@@ -700,7 +700,7 @@ def check_replset_state(con, perf_data, warning="", critical=""):
     try:
         warning = [int(x) for x in warning.split(",")]
     except:
-        warning = [0, 3, 5]
+        warning = [0, 3, 5, 9]
     try:
         critical = [int(x) for x in critical.split(",")]
     except:
@@ -735,6 +735,8 @@ def check_replset_state(con, perf_data, warning="", critical=""):
             message = "State: %i (Secondary)" % state
         elif state == 7:
             message = "State: %i (Arbiter)" % state
+        elif state == 9:
+            message = "State: %i (Rollback)" % state
         elif state == -1:
             message = "Not running with replSet"
         else:
