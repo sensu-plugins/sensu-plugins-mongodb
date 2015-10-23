@@ -42,9 +42,9 @@ Gem::Specification.new do |s|
   s.test_files             = s.files.grep(%r{^(test|spec|features)/})
   s.version                = SensuPluginsMongoDB::Version::VER_STRING
 
-  s.add_runtime_dependency 'bson',              '1.9.2'
-  s.add_runtime_dependency 'bson_ext',          '1.9.2'
-  s.add_runtime_dependency 'mongo',             '1.9.2'
+  s.add_runtime_dependency 'bson',              '1.12.3'
+  s.add_runtime_dependency 'bson_ext',          '1.12.3'
+  s.add_runtime_dependency 'mongo',             '1.12.3'
   s.add_runtime_dependency 'sensu-plugin',      '1.2.0'
 
   s.add_development_dependency 'bundler',                   '~> 1.7'
