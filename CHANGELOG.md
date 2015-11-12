@@ -4,8 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachangelog.com/)
 
 ## Unreleased
+
+## [0.0.7] - 2015-11-12
 ### Fixed
 - Stopped trying to gather indexCounters data from mongo 3 (metrics-mongodb.rb)
+
+### Changed
+- Updated mongo gem to 1.12.3
 
 ## [0.0.6] - 2015-10-13
 ### Fixed
