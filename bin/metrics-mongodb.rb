@@ -93,7 +93,7 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
   end
 
   def gather_replication_metrics(server_status)
-    mongo_version = server_status['version'].gsub(/[^0-9\.]/i, '')  # Handle versions like "2.6.11-pre" etc
+    mongo_version = server_status['version'].gsub(/[^0-9\.]/i, '') # Handle versions like "2.6.11-pre" etc
     server_metrics = {}
 
     server_metrics['lock.ratio'] = "#{sprintf('%.5f', server_status['globalLock']['ratio'])}" unless server_status['globalLock']['ratio'].nil?
