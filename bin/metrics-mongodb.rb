@@ -63,17 +63,22 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
          short: '-s SCHEME',
          default: "#{Socket.gethostname}.mongodb"
 
+  option :password,
+         description: 'MongoDB password',
+         long: '--password PASSWORD',
+         default: nil
+
   option :debug,
          description: 'Enable debug',
          long: '--debug',
          default: false
 
-  def get_mongo_doc(db, command)
+  def get_mongo_doc(command)
     rs = @db.command(command)
-    if rs.successful?
-      return rs.documents[0]
+    unless rs.successful?
+      return nil
     end
-    return nil
+    rs.documents[0]
   end
 
   # connects to mongo and sets @db, works with MongoClient < 2.0.0
@@ -101,8 +106,8 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
     if @debug
       Mongo::Logger.logger.level = Logger::DEBUG
       config_debug = config.clone
-      config_debug[:password] = "***"
-      puts "arguments:"+config_debug.inspect
+      config_debug[:password] = '***'
+      puts 'arguments:' + config_debug.inspect
     end
     host = config[:host]
     port = config[:port]
@@ -115,13 +120,13 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
     _result = false
     # check if master
     begin
-      @is_master = get_mongo_doc(@db, { 'isMaster' => 1 })
+      @is_master = get_mongo_doc('isMaster' => 1)
       unless @is_master.nil?
         _result = @is_master['ok'] == 1
       end
-    rescue Exception => e
+    rescue StandardError => e
       if @debug
-        puts "Error checking isMaster:"+e.message
+        puts 'Error checking isMaster:' + e.message
         puts e.backtrace.inspect
       end
       exit(1)
@@ -130,7 +135,7 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
     # get the metrics
     begin
       metrics = {}
-      server_status = get_mongo_doc(@db, {'serverStatus' => 1})
+      server_status = get_mongo_doc('serverStatus' => 1)
       if !server_status.nil? && server_status['ok'] == 1
         metrics.update(gather_replication_metrics(server_status))
         timestamp = Time.now.to_i
@@ -138,9 +143,9 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
           output [config[:scheme], k].join('.'), v, timestamp
         end
       end
-    rescue Exception => e
+    rescue StandardError => e
       if @debug
-        puts "Error checking serverStatus:"+e.message
+        puts 'Error checking serverStatus:' + e.message
         puts e.backtrace.inspect
       end
       exit(2)
