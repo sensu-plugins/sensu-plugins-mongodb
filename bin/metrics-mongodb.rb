@@ -63,33 +63,91 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
          short: '-s SCHEME',
          default: "#{Socket.gethostname}.mongodb"
 
+  option :debug,
+         description: 'Enable debug',
+         long: '--debug',
+         default: false
+
+  def get_mongo_doc(db, command)
+    rs = @db.command(command)
+    if rs.successful?
+      return rs.documents[0]
+    end
+    return nil
+  end
+
+  # connects to mongo and sets @db, works with MongoClient < 2.0.0
+  def connect_mongo_db(host, port, db_name, db_user, db_password)
+    if Gem.loaded_specs['mongo'].version < Gem::Version.new('2.0.0')
+      mongo_client = MongoClient.new(host, port)
+      @db = mongo_client.db(db_name)
+      @db.authenticate(db_user, db_password) unless db_user.nil?
+    else
+      address_str = "#{host}:#{port}"
+      client_opts = {}
+      client_opts[:database] = db_name
+      unless db_user.nil?
+        client_opts[:user] = db_user
+        client_opts[:password] = db_password
+      end
+      mongo_client = Mongo::Client.new([address_str], client_opts)
+      @db = mongo_client.database
+    end
+  end
+
   def run
+    Mongo::Logger.logger.level = Logger::FATAL
+    @debug = config[:debug]
+    if @debug
+      Mongo::Logger.logger.level = Logger::DEBUG
+      config_debug = config.clone
+      config_debug[:password] = "***"
+      puts "arguments:"+config_debug.inspect
+    end
     host = config[:host]
     port = config[:port]
     db_name = 'admin'
     db_user = config[:user]
     db_password = config[:password]
 
-    mongo_client = MongoClient.new(host, port)
-    @db = mongo_client.db(db_name)
-    @db.authenticate(db_user, db_password) unless db_user.nil?
+    connect_mongo_db(host, port, db_name, db_user, db_password)
 
-    @is_master = { 'isMaster' => 1 }
+    _result = false
+    # check if master
+    begin
+      @is_master = get_mongo_doc(@db, { 'isMaster' => 1 })
+      unless @is_master.nil?
+        _result = @is_master['ok'] == 1
+      end
+    rescue Exception => e
+      if @debug
+        puts "Error checking isMaster:"+e.message
+        puts e.backtrace.inspect
+      end
+      exit(1)
+    end
+
+    # get the metrics
     begin
       metrics = {}
-      _result = @db.command(@is_master)['ok'] == 1
-      server_status = @db.command('serverStatus' => 1)
-      if server_status['ok'] == 1
+      server_status = get_mongo_doc(@db, {'serverStatus' => 1})
+      if !server_status.nil? && server_status['ok'] == 1
         metrics.update(gather_replication_metrics(server_status))
         timestamp = Time.now.to_i
         metrics.each do |k, v|
           output [config[:scheme], k].join('.'), v, timestamp
         end
       end
-      ok
-    rescue
-      exit(1)
+    rescue Exception => e
+      if @debug
+        puts "Error checking serverStatus:"+e.message
+        puts e.backtrace.inspect
+      end
+      exit(2)
     end
+
+    # done!
+    ok
   end
 
   def gather_replication_metrics(server_status)
