@@ -75,9 +75,10 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
 
   def get_mongo_doc(command)
     rs = @db.command(command)
-    if rs.successful?
-      return rs.documents[0]
+    if !rs.successful?
+      return nil
     end
+    return rs.documents[0]
   end
 
   # connects to mongo and sets @db, works with MongoClient < 2.0.0
@@ -106,7 +107,7 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
       Mongo::Logger.logger.level = Logger::DEBUG
       config_debug = config.clone
       config_debug[:password] = '***'
-      puts "arguments:"+config_debug.inspect
+      puts 'arguments:' + config_debug.inspect
     end
     host = config[:host]
     port = config[:port]
