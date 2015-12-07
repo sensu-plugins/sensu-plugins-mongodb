@@ -75,10 +75,10 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
 
   def get_mongo_doc(command)
     rs = @db.command(command)
-    if !rs.successful?
+    unless rs.successful?
       return nil
     end
-    return rs.documents[0]
+    rs.documents[0]
   end
 
   # connects to mongo and sets @db, works with MongoClient < 2.0.0
