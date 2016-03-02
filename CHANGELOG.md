@@ -5,6 +5,13 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 
 ## [Unreleased]
 
+## [1.0.0] - 2016-04-27
+### Removed
+- support for Rubies 1.9.3 and 2.0
+
+### Added
+- support for Ruby 2.3
+
 ## [0.0.8] - 2016-03-04
 ### Added
 - Add a ruby wrapper script for check-mongodb.py
@@ -49,8 +56,12 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 ### Added
 - initial release
 
+<<<<<<< 155642b23711440e15f0d07e570976277f7819d7
 [unreleased]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/0.0.8...HEAD
 [0.0.8]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/0.0.7...0.0.8
+=======
+[unreleased]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/0.0.7...HEAD
+>>>>>>> update repo
 [0.0.7]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/0.0.6...0.0.7
 [0.0.6]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/0.0.5...0.0.6
 [0.0.5]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/0.0.4...0.0.5
