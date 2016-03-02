@@ -159,7 +159,7 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
     mongo_version = server_status['version'].gsub(/[^0-9\.]/i, '') # Handle versions like "2.6.11-pre" etc
     server_metrics = {}
 
-    server_metrics['lock.ratio'] = "#{sprintf('%.5f', server_status['globalLock']['ratio'])}" unless server_status['globalLock']['ratio'].nil?
+    server_metrics['lock.ratio'] = sprintf('%.5f', server_status['globalLock']['ratio']).to_s unless server_status['globalLock']['ratio'].nil?
 
     server_metrics['lock.queue.total'] = server_status['globalLock']['currentQueue']['total']
     server_metrics['lock.queue.readers'] = server_status['globalLock']['currentQueue']['readers']
@@ -170,11 +170,11 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
 
     if Gem::Version.new(mongo_version) < Gem::Version.new('3.0.0')
       if server_status['indexCounters']['btree'].nil?
-        server_metrics['indexes.missRatio'] = "#{sprintf('%.5f', server_status['indexCounters']['missRatio'])}"
+        server_metrics['indexes.missRatio'] = sprintf('%.5f', server_status['indexCounters']['missRatio']).to_s
         server_metrics['indexes.hits'] = server_status['indexCounters']['hits']
         server_metrics['indexes.misses'] = server_status['indexCounters']['misses']
       else
-        server_metrics['indexes.missRatio'] = "#{sprintf('%.5f', server_status['indexCounters']['btree']['missRatio'])}"
+        server_metrics['indexes.missRatio'] = sprintf('%.5f', server_status['indexCounters']['btree']['missRatio']).to_s
         server_metrics['indexes.hits'] = server_status['indexCounters']['btree']['hits']
         server_metrics['indexes.misses'] = server_status['indexCounters']['btree']['misses']
       end

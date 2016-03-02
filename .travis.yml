@@ -1,20 +1,34 @@
 language: ruby
 cache:
-  - bundler
+- bundler
 install:
-  - bundle install
+- bundle install
 rvm:
-  - 1.9.3
-  - 2.0
-  - 2.1
-  - 2.2
+- 1.9.3
+- 2.0
+- 2.1
+- 2.2
 notifications:
   email:
     recipients:
-      - sensu-plugin@sensu-plugins.io
-      - rich.m.chatterton@gmail.com
+    - sensu-plugin@sensu-plugins.io
+    - rich.m.chatterton@gmail.com
     on_success: change
     on_failure: always
-
 script:
-  - 'bundle exec rake default'
+- bundle exec rake default
+- gem build sensu-plugins-mongodb.gemspec
+- gem install sensu-plugins-mongodb-*.gem
+deploy:
+  provider: rubygems
+  api_key:
+    secure: AmWOUI17dlacbHYn6wzYufxzadoia4Y3X0bVLoHM2ZPqEz8Eq3QV059bGDjxGc0+93ZCdB4ebUvaIEZvETsj3NOA+jgEs5bbVag2BgYBvSiG64SoG+mAj0pYnEDer+EZ1qQpo+z1660L3nliWiEpvCg/KMCn7htZ3rOdN0EzuPw=
+  gem: sensu-plugins-mongodb
+  on:
+    tags: true
+    all_branches: true
+    rvm: 1.9.3
+    rvm: 2.0
+    rvm: 2.1
+    rvm: 2.2
+    repo: sensu-plugins/sensu-plugins-mongodb
