@@ -5,6 +5,13 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 
 ## [Unreleased]
 
+## [0.0.8] - 2016-03-04
+### Added
+- Add a ruby wrapper script for check-mongodb.py
+
+### Changed
+- Rubocop upgrade and cleanup
+
 ## [0.0.7] - 2015-11-12
 ### Fixed
 - Stopped trying to gather indexCounters data from mongo 3 (metrics-mongodb.rb)
@@ -42,7 +49,8 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 ### Added
 - initial release
 
-[unreleased]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/0.0.7...HEAD
+[unreleased]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/0.0.8...HEAD
+[0.0.8]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/0.0.7...0.0.8
 [0.0.7]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/0.0.6...0.0.7
 [0.0.6]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/0.0.5...0.0.6
 [0.0.5]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/0.0.4...0.0.5
