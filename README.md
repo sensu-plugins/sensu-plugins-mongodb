@@ -10,6 +10,7 @@
 
 ## Files
  * bin/check-mongodb.py
+ * bin/check-mongodb.rb - wrapper for check-mongodb.py
  * bin/metrics-mongodb.rb
 
 ## Usage
@@ -19,3 +20,5 @@
 [Installation and Setup](http://sensu-plugins.io/docs/installation_instructions.html)
 
 ## Notes
+
+The `pymongo` python package needs to be installed to use `check-mongodb`
