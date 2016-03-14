@@ -180,8 +180,8 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
       end
     end
 
-    server_metrics['cursors.open'] = server_status['cursors']['totalOpen']
-    server_metrics['cursors.timedOut'] = server_status['cursors']['timedOut']
+    server_metrics['cursors.open'] = server_status['metrics']['cursor']['open']['total']
+    server_metrics['cursors.timedOut'] = server_status['metrics']['cursor']['timedOut']
 
     server_metrics['mem.residentMb'] = server_status['mem']['resident']
     server_metrics['mem.virtualMb'] = server_status['mem']['virtual']
