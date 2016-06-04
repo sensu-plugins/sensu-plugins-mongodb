@@ -64,7 +64,8 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 ### Added
 - initial release
 
-[Unreleased]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/0.0.8...HEAD
+[Unreleased]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.0.0...HEAD
+[1.0.0]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/0.0.8...1.0.0
 [0.0.8]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/0.0.7...0.0.8
 [0.0.7]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/0.0.6...0.0.7
 [0.0.6]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/0.0.5...0.0.6
