@@ -14,7 +14,7 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 
 ### Changed
 - Update to rubocop 0.40 and cleanup
-- Update to mongo gem 2.2.x and boson 4.x for MongoDB 3.2 support
+- Update to mongo gem 2.2.x and bson 4.x for MongoDB 3.2 support
 
 ### Fixed
 - Long was added as a numeric type
