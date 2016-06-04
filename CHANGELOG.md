@@ -4,15 +4,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
-### Fixed
-- Long was added as a numeric type
 
-## [1.0.0] - 2016-04-27
+## [1.0.0] - 2016-06-03
 ### Removed
 - support for Rubies 1.9.3 and 2.0
 
 ### Added
 - support for Ruby 2.3
+
+### Changed
+- Update to rubocop 0.40 and cleanup
+- Update to mongo gem 2.2.x and boson 4.x for MongoDB 3.2 support
+
+### Fixed
+- Long was added as a numeric type
+- metrics-mongodb.rb: fix typo
 
 ## [0.0.8] - 2016-03-04
 ### Added
