@@ -268,19 +268,6 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
     server_metrics['opcountersRepl_getmore'] = server_status['opcountersRepl']['getmore']
     server_metrics['opcountersRepl_command'] = server_status['opcountersRepl']['command']
 
-    # Record stats
-    output server_status['*']
-    #server_metrics['recordStats_accessesNotInMemory'] = server_status['recordStats']['accessesNotInMemory']
-    #server_metrics['recordStats_pageFaultExceptionsThrown'] = server_status['recordStats']['pageFaultExceptionsThrown']
-    #server_metrics['recordStats_admin_accessesNotInMemory'] = server_status['recordStats']['admin']['accessesNotInMemory']
-    #server_metrics['recordStats_admin_pageFaultExceptionsThrown'] = server_status['recordStats']['admin']['pageFaultExceptionsThrown']
-    #server_metrics['recordStats_dashboard_accessesNotInMemory'] = server_status['recordStats']['dashboard']['accessesNotInMemory']
-    #server_metrics['recordStats_dashboard_pageFaultExceptionsThrown'] = server_status['recordStats']['dashboard']['pageFaultExceptionsThrown']
-    #server_metrics['recordStats_functional_accessesNotInMemory'] = server_status['recordStats']['functional']['accessesNotInMemory']
-    #server_metrics['recordStats_functional_pageFaultExceptionsThrown'] = server_status['recordStats']['functional']['pageFaultExceptionsThrown']
-    #server_metrics['recordStats_local_accessesNotInMemory'] = server_status['recordStats']['local']['accessesNotInMemory']
-    #server_metrics['recordStats_local_pageFaultExceptionsThrown'] = server_status['recordStats']['local']['pageFaultExceptionsThrown']
-
     # Memory
     server_metrics['mem_residentMb'] = server_status['mem']['resident']
     server_metrics['mem_virtualMb'] = server_status['mem']['virtual']
