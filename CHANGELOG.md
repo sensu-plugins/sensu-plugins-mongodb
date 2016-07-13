@@ -5,6 +5,10 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 
 ## [Unreleased]
 
+## [1.0.1] - 2015-07-13
+### Added
+- Additional metrics not included in original metrics-mongodb.rb
+
 ## [1.0.0] - 2016-06-03
 ### Removed
 - support for Rubies 1.9.3 and 2.0
