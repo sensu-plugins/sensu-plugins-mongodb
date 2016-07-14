@@ -155,6 +155,7 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
     ok
   end
 
+  # rubocop:disable Metrics/AbcSize
   def gather_replication_metrics(server_status)
     mongo_version = server_status['version'].gsub(/[^0-9\.]/i, '') # Handle versions like "2.6.11-pre" etc
     server_metrics = {}
