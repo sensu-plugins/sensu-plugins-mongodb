@@ -205,9 +205,9 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
 
     # Global Lock
     server_metrics['lock.totalTime'] = server_status['globalLock']['totalTime']
-    server_metrics['lock.queue_total'] = server_status['globalLock']['currentQueue']['total']
-    server_metrics['lock.queue_readers'] = server_status['globalLock']['currentQueue']['readers']
-    server_metrics['lock.queue_writers'] = server_status['globalLock']['currentQueue']['writers']
+    server_metrics['lock.queue.total'] = server_status['globalLock']['currentQueue']['total']
+    server_metrics['lock.queue.readers'] = server_status['globalLock']['currentQueue']['readers']
+    server_metrics['lock.queue.writers'] = server_status['globalLock']['currentQueue']['writers']
     server_metrics['lock.clients_total'] = server_status['globalLock']['activeClients']['total']
     server_metrics['lock.clients_readers'] = server_status['globalLock']['activeClients']['readers']
     server_metrics['lock.clients_writers'] = server_status['globalLock']['activeClients']['writers']
