@@ -163,7 +163,7 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
     begin
       metrics = {}
       replication_members = replication_status['members']
-      if !replication_members.nil?
+      unless replication_members.nil?
         replication_members.each do |replication_member_details|
           metrics.update(gather_replication_member_metrics(replication_member_details))
           member_id = replication_member_details['_id']
