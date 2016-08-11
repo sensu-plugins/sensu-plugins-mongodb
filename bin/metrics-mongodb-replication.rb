@@ -231,5 +231,4 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
 
     replication_member_metrics
   end
-
 end
