@@ -236,15 +236,15 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
     end
 
     # Locks
-      server_metrics['locks.global.acquireCount_r'] = server_status['locks']['Global']['acquireCount']['r']
-      server_metrics['locks.global.acquireCount_w'] = server_status['locks']['Global']['acquireCount']['w']
-      server_metrics['locks.global.acquireCount_R'] = server_status['locks']['Global']['acquireCount']['R']
-      server_metrics['locks.global.acquireCount_W'] = server_status['locks']['Global']['acquireCount']['W']
-      server_metrics['locks.database.acquireCount_r'] = server_status['locks']['Database']['acquireCount']['r']
-      server_metrics['locks.database.acquireCount_w'] = server_status['locks']['Database']['acquireCount']['w']
-      server_metrics['locks.database.acquireCount_R'] = server_status['locks']['Database']['acquireCount']['R']
-      server_metrics['locks.database.acquireCount_W'] = server_status['locks']['Database']['acquireCount']['W']
-      server_metrics['locks.metadata.acquireCount_W'] = server_status['locks']['Metadata']['acquireCount']['W']
+    server_metrics['locks.global.acquireCount_r'] = server_status['locks']['Global']['acquireCount']['r']
+    server_metrics['locks.global.acquireCount_w'] = server_status['locks']['Global']['acquireCount']['w']
+    server_metrics['locks.global.acquireCount_R'] = server_status['locks']['Global']['acquireCount']['R']
+    server_metrics['locks.global.acquireCount_W'] = server_status['locks']['Global']['acquireCount']['W']
+    server_metrics['locks.database.acquireCount_r'] = server_status['locks']['Database']['acquireCount']['r']
+    server_metrics['locks.database.acquireCount_w'] = server_status['locks']['Database']['acquireCount']['w']
+    server_metrics['locks.database.acquireCount_R'] = server_status['locks']['Database']['acquireCount']['R']
+    server_metrics['locks.database.acquireCount_W'] = server_status['locks']['Database']['acquireCount']['W']
+    server_metrics['locks.metadata.acquireCount_W'] = server_status['locks']['Metadata']['acquireCount']['W']
     if Gem::Version.new(mongo_version) < Gem::Version.new('3.2.0')
       server_metrics['locks.mmapv1journal.acquireCount_r'] = server_status['locks']['MMAPV1Journal']['acquireCount']['r']
       server_metrics['locks.mmapv1journal.acquireCount_w'] = server_status['locks']['MMAPV1Journal']['acquireCount']['w']

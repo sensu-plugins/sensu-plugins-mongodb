@@ -23,7 +23,7 @@
 #   Basics from github.com/sensu-plugins/sensu-plugins-mongodb/bin/metrics-mongodb
 #
 #   Replication lag is calculated by obtaining the last optime from primary and
-#   secondary members. The last optime of the secondary is subtracted from the 
+#   secondary members. The last optime of the secondary is subtracted from the
 #   last optime of the primary to produce the difference in seconds, minutes and hours
 #
 # LICENSE:
@@ -86,7 +86,6 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
     rs.documents[0]
   end
 
-
   # connects to mongo and sets @db, works with MongoClient < 2.0.0
   def connect_mongo_db(host, port, db_name, db_user, db_password)
     if Gem.loaded_specs['mongo'].version < Gem::Version.new('2.0.0')
@@ -147,8 +146,8 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
         metrics.update(gather_replication_metrics(replication_status))
         timestamp = Time.now.to_i
         metrics.each do |k, v|
-          if !v.nil?
-            output [config[:scheme],'replication', k].join('.'), v, timestamp
+          unless v.nil?
+            output [config[:scheme], 'replication', k].join('.'), v, timestamp
           end
         end
       end
@@ -166,13 +165,12 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
       replication_members = replication_status['members']
       if !replication_members.nil?
         replication_members.each do |replication_member_details|
-          replication_member_status = replication_member_details
           metrics.update(gather_replication_member_metrics(replication_member_details))
           member_id = replication_member_details['_id']
           timestamp = Time.now.to_i
           metrics.each do |k, v|
-            if !v.nil?
-              output [config[:scheme],"member_#{member_id}", k].join('.'), v, timestamp
+            unless v.nil?
+              output [config[:scheme], "member_#{member_id}", k].join('.'), v, timestamp
             end
           end
         end
@@ -210,22 +208,21 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
     replication_member_metrics['state'] = replication_member_details['state']
     replication_member_metrics['stateStr'] = replication_member_details['stateStr']
     member_hierarchy = replication_member_details['stateStr']
-    if member_hierarchy == "PRIMARY"
-      @primaryOptimeDate = replication_member_details['optimeDate']
-      replication_member_metrics['primary.startOptimeDate'] = @primaryOptimeDate
+    if member_hierarchy == 'PRIMARY'
+      @primary_optime_date = replication_member_details['optimeDate']
+      replication_member_metrics['primary.startOptimeDate'] = @primary_optime_date
     end
-    if member_hierarchy == "SECONDARY"
-      @secondaryOptimeDate = replication_member_details['optimeDate']
-      difference_in_seconds = (@primaryOptimeDate - @secondaryOptimeDate).to_i
-      difference_in_minutes = ((@primaryOptimeDate - @secondaryOptimeDate) / 60).to_i
-      difference_in_hours = ((@primaryOptimeDate - @secondaryOptimeDate) / 3600).to_i
+    if member_hierarchy == 'SECONDARY'
+      @secondary_optime_date = replication_member_details['optimeDate']
+      difference_in_seconds = (@primary_optime_date - @secondary_optime_date).to_i
+      difference_in_minutes = ((@primary_optime_date - @secondary_optime_date) / 60).to_i
+      difference_in_hours = ((@primary_optime_date - @secondary_optime_date) / 3600).to_i
       replication_member_metrics['secondsBehindPrimary'] = difference_in_seconds
       replication_member_metrics['minutesBehindPrimary'] = difference_in_minutes
       replication_member_metrics['hoursBehindPrimary'] = difference_in_hours
     end
     replication_member_metrics['optimeDate'] = replication_member_details['optimeDate']
     replication_member_metrics['uptime'] = replication_member_details['uptime']
-    #replication_member_metrics['optime'] = replication_member_details['optime']
     replication_member_metrics['lastHeartbeat'] = replication_member_details['lastHeartbeat']
     replication_member_metrics['lastHeartbeatRecv'] = replication_member_details['lastHeartbeatiRecv']
     replication_member_metrics['pingMs'] = replication_member_details['pingMs']
