@@ -5,7 +5,12 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 
 ## [Unreleased]
 
-## [1.0.1] - 2015-07-13
+## [1.0.2] - 2016-08-11
+## Added
+- Inclusion of metrics-mongodb-replication.rb to produce replication metrics including lag statistics
+- Updated metrics-mongodb.rb to include version checks to ensure execution in mongodb > 3.2.x
+
+## [1.0.1] - 2016-07-13
 ### Added
 - Additional metrics not included in original metrics-mongodb.rb
 

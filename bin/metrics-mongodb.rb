@@ -170,10 +170,12 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
     server_metrics['asserts.rollovers'] = server_status['asserts']['rollovers']
 
     # Background flushing
-    server_metrics['backgroundFlushing.flushes'] = server_status['backgroundFlushing']['flushes']
-    server_metrics['backgroundFlushing.total_ms'] = server_status['backgroundFlushing']['total_ms']
-    server_metrics['backgroundFlushing.average_ms'] = server_status['backgroundFlushing']['average_ms']
-    server_metrics['backgroundFlushing.last_ms'] = server_status['backgroundFlushing']['last_ms']
+    if Gem::Version.new(mongo_version) < Gem::Version.new('3.2.0')
+      server_metrics['backgroundFlushing.flushes'] = server_status['backgroundFlushing']['flushes']
+      server_metrics['backgroundFlushing.total_ms'] = server_status['backgroundFlushing']['total_ms']
+      server_metrics['backgroundFlushing.average_ms'] = server_status['backgroundFlushing']['average_ms']
+      server_metrics['backgroundFlushing.last_ms'] = server_status['backgroundFlushing']['last_ms']
+    end
 
     # Connections
     server_metrics['connections.current'] = server_status['connections']['current']
@@ -181,23 +183,27 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
     server_metrics['connections.totalCreated'] = server_status['connections']['totalCreated']
 
     # Cursors
-    server_metrics['clientCursors.size'] = server_status['cursors']['clientCursors_size']
-    server_metrics['cursors.open'] = server_status['cursors']['totalOpen']
-    server_metrics['cursors.pinned'] = server_status['cursors']['pinned']
-    server_metrics['cursors.totalNoTimeout'] = server_status['cursors']['totalNoTimeout']
-    server_metrics['cursors.timedOut'] = server_status['cursors']['timedOut']
+    if Gem::Version.new(mongo_version) < Gem::Version.new('3.2.0')
+      server_metrics['clientCursors.size'] = server_status['cursors']['clientCursors_size']
+      server_metrics['cursors.open'] = server_status['cursors']['totalOpen']
+      server_metrics['cursors.pinned'] = server_status['cursors']['pinned']
+      server_metrics['cursors.totalNoTimeout'] = server_status['cursors']['totalNoTimeout']
+      server_metrics['cursors.timedOut'] = server_status['cursors']['timedOut']
+    end
 
     # Journaling (durability)
-    server_metrics['journal.commits'] = server_status['dur']['commits']
-    server_metrics['journaled_MB'] = server_status['dur']['journaledMB']
-    server_metrics['journal.timeMs.writeToDataFiles'] = server_status['dur']['timeMs']['writeToDataFiles']
-    server_metrics['journal.writeToDataFilesMB'] = server_status['dur']['writeToDataFilesMB']
-    server_metrics['journal.compression'] = server_status['dur']['compression']
-    server_metrics['journal.commitsInWriteLock'] = server_status['dur']['commitsInWriteLock']
-    server_metrics['journal.timeMs.dt'] = server_status['dur']['timeMs']['dt']
-    server_metrics['journal.timeMs.prepLogBuffer'] = server_status['dur']['timeMs']['prepLogBuffer']
-    server_metrics['journal.timeMs.writeToJournal'] = server_status['dur']['timeMs']['writeToJournal']
-    server_metrics['journal.timeMs.remapPrivateView'] = server_status['dur']['timeMs']['remapPrivateView']
+    if Gem::Version.new(mongo_version) < Gem::Version.new('3.2.0')
+      server_metrics['journal.commits'] = server_status['dur']['commits']
+      server_metrics['journaled_MB'] = server_status['dur']['journaledMB']
+      server_metrics['journal.timeMs.writeToDataFiles'] = server_status['dur']['timeMs']['writeToDataFiles']
+      server_metrics['journal.writeToDataFilesMB'] = server_status['dur']['writeToDataFilesMB']
+      server_metrics['journal.compression'] = server_status['dur']['compression']
+      server_metrics['journal.commitsInWriteLock'] = server_status['dur']['commitsInWriteLock']
+      server_metrics['journal.timeMs.dt'] = server_status['dur']['timeMs']['dt']
+      server_metrics['journal.timeMs.prepLogBuffer'] = server_status['dur']['timeMs']['prepLogBuffer']
+      server_metrics['journal.timeMs.writeToJournal'] = server_status['dur']['timeMs']['writeToJournal']
+      server_metrics['journal.timeMs.remapPrivateView'] = server_status['dur']['timeMs']['remapPrivateView']
+    end
 
     # Extra info
     server_metrics['mem.heap_usage_bytes'] = server_status['extra_info']['heap_usage_bytes']
@@ -234,19 +240,39 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
     server_metrics['locks.global.acquireCount_w'] = server_status['locks']['Global']['acquireCount']['w']
     server_metrics['locks.global.acquireCount_R'] = server_status['locks']['Global']['acquireCount']['R']
     server_metrics['locks.global.acquireCount_W'] = server_status['locks']['Global']['acquireCount']['W']
-    server_metrics['locks.mmapv1journal.acquireCount_r'] = server_status['locks']['MMAPV1Journal']['acquireCount']['r']
-    server_metrics['locks.mmapv1journal.acquireCount_w'] = server_status['locks']['MMAPV1Journal']['acquireCount']['w']
-    server_metrics['locks.mmapv1journal.acquireCount_R'] = server_status['locks']['MMAPV1Journal']['acquireCount']['R']
-    server_metrics['locks.mmapv1journal.acquireWaitCount_R'] = server_status['locks']['MMAPV1Journal']['acquireWaitCount']['R']
-    server_metrics['locks.mmapv1journal.timeAcquiringMicros_R'] = server_status['locks']['MMAPV1Journal']['timeAcquiringMicros']['R']
     server_metrics['locks.database.acquireCount_r'] = server_status['locks']['Database']['acquireCount']['r']
     server_metrics['locks.database.acquireCount_w'] = server_status['locks']['Database']['acquireCount']['w']
     server_metrics['locks.database.acquireCount_R'] = server_status['locks']['Database']['acquireCount']['R']
     server_metrics['locks.database.acquireCount_W'] = server_status['locks']['Database']['acquireCount']['W']
-    server_metrics['locks.collection.acquireCount_R'] = server_status['locks']['Collection']['acquireCount']['R']
     server_metrics['locks.metadata.acquireCount_W'] = server_status['locks']['Metadata']['acquireCount']['W']
-    server_metrics['locks.oplog.acquireCount_w'] = server_status['locks']['oplog']['acquireCount']['w']
-    server_metrics['locks.oplog.acquireCount_R'] = server_status['locks']['oplog']['acquireCount']['R']
+    if Gem::Version.new(mongo_version) < Gem::Version.new('3.2.0')
+      server_metrics['locks.mmapv1journal.acquireCount_r'] = server_status['locks']['MMAPV1Journal']['acquireCount']['r']
+      server_metrics['locks.mmapv1journal.acquireCount_w'] = server_status['locks']['MMAPV1Journal']['acquireCount']['w']
+      server_metrics['locks.mmapv1journal.acquireCount_R'] = server_status['locks']['MMAPV1Journal']['acquireCount']['R']
+      server_metrics['locks.mmapv1journal.acquireWaitCount_R'] = server_status['locks']['MMAPV1Journal']['acquireWaitCount']['R']
+      server_metrics['locks.mmapv1journal.timeAcquiringMicros_R'] = server_status['locks']['MMAPV1Journal']['timeAcquiringMicros']['R']
+      server_metrics['locks.collection.acquireCount_R'] = server_status['locks']['Collection']['acquireCount']['R']
+      server_metrics['locks.oplog.acquireCount_w'] = server_status['locks']['oplog']['acquireCount']['w']
+      server_metrics['locks.oplog.acquireCount_R'] = server_status['locks']['oplog']['acquireCount']['R']
+    else
+      server_metrics['locks.global.acquireWaitCount_w'] = server_status['locks']['Global']['acquireWaitCount']['w']
+      server_metrics['locks.global.acquireWaitCount_W'] = server_status['locks']['Global']['acquireWaitCount']['W']
+      server_metrics['locks.global.timeAcquiringMicros_r'] = server_status['locks']['Global']['timeAcquiringMicros']['r']
+      server_metrics['locks.global.timeAcquiringMicros_w'] = server_status['locks']['Global']['timeAcquiringMicros']['w']
+      server_metrics['locks.global.timeAcquiringMicros_W'] = server_status['locks']['Global']['timeAcquiringMicros']['W']
+      server_metrics['locks.database.acquireWaitCount_r'] = server_status['locks']['Database']['acquireWaitCount']['r']
+      server_metrics['locks.database.acquireWaitCount_w'] = server_status['locks']['Database']['acquireWaitCount']['w']
+      server_metrics['locks.database.acquireWaitCount_R'] = server_status['locks']['Database']['acquireWaitCount']['R']
+      server_metrics['locks.database.acquireWaitCount_W'] = server_status['locks']['Database']['acquireWaitCount']['W']
+      server_metrics['locks.collection.acquireCount_r'] = server_status['locks']['Collection']['acquireCount']['r']
+      server_metrics['locks.collection.acquireCount_w'] = server_status['locks']['Collection']['acquireCount']['w']
+      server_metrics['locks.collection.acquireCount_W'] = server_status['locks']['Collection']['acquireCount']['W']
+      server_metrics['locks.metadata.acquireCount_w'] = server_status['locks']['Metadata']['acquireCount']['w']
+      server_metrics['locks.metadata.acquireWaitCount_W'] = server_status['locks']['Metadata']['acquireWaitCount']['W']
+      server_metrics['locks.metadata.timeAcquiringMicros_W'] = server_status['locks']['Metadata']['timeAcquiringMicros']['W']
+      server_metrics['locks.oplog.acquireCount_r'] = server_status['locks']['oplog']['acquireCount']['r']
+      server_metrics['locks.oplog.acquireCount_w'] = server_status['locks']['oplog']['acquireCount']['w']
+    end
 
     # Network
     server_metrics['network.bytesIn'] = server_status['network']['bytesIn']
