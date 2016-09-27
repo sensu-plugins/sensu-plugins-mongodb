@@ -1,3 +1,4 @@
+/.binstubs/
 /.bundle/
 /.yardoc
 /Gemfile.lock
@@ -16,3 +17,4 @@ mkmf.log
 .DS_Store
 .idea/*
 *.gem
+*.swp

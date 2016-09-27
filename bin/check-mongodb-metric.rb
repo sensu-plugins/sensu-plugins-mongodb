@@ -1,11 +1,11 @@
 #! /usr/bin/env ruby
 #
-#   metrics-mongodb.rb
+#   check-mongodb-metric.rb
 #
 # DESCRIPTION:
 #
 # OUTPUT:
-#   metric data
+#   plain text
 #
 # PLATFORMS:
 #   Linux
@@ -20,15 +20,14 @@
 #   #YELLOW
 #
 # NOTES:
-#   Basics from github.com/mantree/mongodb-graphite-metrics
 #
 # LICENSE:
-#   Copyright 2013 github.com/foomatty
+#   Copyright 2016 Conversocial https://github.com/conversocial
 #   Released under the same terms as Sensu (the MIT license); see LICENSE
 #   for details.
 #
 
-require 'sensu-plugin/metric/cli'
+require 'sensu-plugin/check/cli'
 require 'sensu-plugins-mongodb/metics'
 require 'mongo'
 include Mongo
@@ -37,7 +36,7 @@ include Mongo
 # Mongodb
 #
 
-class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
+class CheckMongodbMetric < Sensu::Plugin::Check::CLI
   option :host,
          description: 'MongoDB host',
          long: '--host HOST',
@@ -63,16 +62,27 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
          long: '--debug',
          default: false
 
-  option :scheme,
-         description: 'Metric naming scheme',
-         long: '--scheme SCHEME',
-         short: '-s SCHEME',
-         default: "#{Socket.gethostname}.mongodb"
-
   option :require_master,
          description: 'Require the node to be a master node',
          long: '--require-master',
          default: false
+
+  option :metric,
+         description: 'Name of the metric to check',
+         long: '--metric METRIC',
+         short: '-m METRIC'
+
+  option :warn,
+         description: 'Warn if values are above this threshold',
+         short: '-w WARN',
+         proc: proc(&:to_i),
+         default: 0
+
+  option :crit,
+         description: 'Fail if values are above this threshold',
+         short: '-c CRIT',
+         proc: proc(&:to_i),
+         default: 0
 
   def run
     Mongo::Logger.logger.level = Logger::FATAL
@@ -90,13 +100,19 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
     exit(1) if config[:require_master] && !collector.master?
     metrics = collector.server_metrics
 
-    # Print them in graphite format.
-    timestamp = Time.now.to_i
-    metrics.each do |k, v|
-      output [config[:scheme], k].join('.'), v, timestamp
+    # Make sure the requested value is available.
+    unless metrics.key?(config[:metric])
+      unknown "Unable to find a value for metric '#{config[:metric]}'"
     end
 
-    # done!
-    ok
+    # Check the requested value against the thresholds.
+    value = metrics[config[:metric]]
+    if value >= config[:crit]
+      critical "The value of '#{config[:metric]}' exceeds #{config[:crit]}."
+    end
+    if value >= config[:warn]
+      warning "The value of '#{config[:metric]}' exceeds #{config[:warn]}."
+    end
+    ok "The value of '#{config[:metric]}' is below all threshold."
   end
 end
