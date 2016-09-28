@@ -27,6 +27,11 @@ module SensuPluginsMongoDB
       port = @config[:port]
       db_user = @config[:user]
       db_password = @config[:password]
+      ssl = @config[:ssl]
+      ssl_cert = @config[:ssl_cert]
+      ssl_key = @config[:ssl_key]
+      ssl_ca_cert = @config[:ssl_ca_cert]
+      ssl_verify = @config[:ssl_verify]
 
       if Gem.loaded_specs['mongo'].version < Gem::Version.new('2.0.0')
         mongo_client = MongoClient.new(host, port)
@@ -39,6 +44,13 @@ module SensuPluginsMongoDB
         unless db_user.nil?
           client_opts[:user] = db_user
           client_opts[:password] = db_password
+        end
+        if ssl
+          client_opts[:ssl] = true
+          client_opts[:ssl_cert] = ssl_cert
+          client_opts[:ssl_key] = ssl_key
+          client_opts[:ssl_ca_cert] = ssl_ca_cert
+          client_opts[:ssl_verify] = ssl_verify
         end
         mongo_client = Mongo::Client.new([address_str], client_opts)
         @db = mongo_client.database

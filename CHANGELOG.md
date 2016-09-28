@@ -9,6 +9,7 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 - Inclusion of check-mongodb-metrics.rb to perform checks agains the same data metrics-mongodb.rb produces.
 - Inclusion of lib/sensu-plugins-mongodb/metics.rb to share metric collection logic.
 - Tests to the metrics processing shared code.
+- Support for SSL certificates for clients.
 
 ## Changed
 - Moved most of metrics-mongodb.rb code to shared library.
