@@ -112,25 +112,25 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
   end
 
   # connects to mongo and sets @db, works with MongoClient < 2.0.0
-  def connect_mongo_db(host, port, db_name, db_user, db_password, ssl, ssl_cert, ssl_key, ssl_ca_cert, ssl_verify)
+  def connect_mongo_db
     if Gem.loaded_specs['mongo'].version < Gem::Version.new('2.0.0')
       mongo_client = MongoClient.new(host, port)
       @db = mongo_client.db(db_name)
       @db.authenticate(db_user, db_password) unless db_user.nil?
     else
-      address_str = "#{host}:#{port}"
+      address_str = "#{config[:host]}:#{config[:port]}"
       client_opts = {}
-      client_opts[:database] = db_name
-      unless db_user.nil?
-        client_opts[:user] = db_user
-        client_opts[:password] = db_password
+      client_opts[:database] = 'admin'
+      unless config[:user].nil?
+        client_opts[:user] = config[:user]
+        client_opts[:password] = config[:password]
       end
-      if ssl
+      if config[:ssl]
         client_opts[:ssl] = true
-        client_opts[:ssl_cert] = ssl_cert
-        client_opts[:ssl_key] = ssl_key
-        client_opts[:ssl_ca_cert] = ssl_ca_cert
-        client_opts[:ssl_verify] = ssl_verify
+        client_opts[:ssl_cert] = config[:ssl_cert]
+        client_opts[:ssl_key] = config[:ssl_key]
+        client_opts[:ssl_ca_cert] = config[:ssl_ca_cert]
+        client_opts[:ssl_verify] = config[:ssl_verify]
       end
       mongo_client = Mongo::Client.new([address_str], client_opts)
       @db = mongo_client.database
@@ -146,18 +146,8 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
       config_debug[:password] = '***'
       puts 'arguments:' + config_debug.inspect
     end
-    host = config[:host]
-    port = config[:port]
-    db_name = 'admin'
-    db_user = config[:user]
-    db_password = config[:password]
-    ssl = config[:ssl]
-    ssl_cert = config[:ssl_cert]
-    ssl_key = config[:ssl_key]
-    ssl_ca_cert = config[:ssl_ca_cert]
-    ssl_verify = config[:ssl_verify]
 
-    connect_mongo_db(host, port, db_name, db_user, db_password, ssl, ssl_cert, ssl_key, ssl_ca_cert, ssl_verify)
+    connect_mongo_db
 
     _result = false
     # check if master
