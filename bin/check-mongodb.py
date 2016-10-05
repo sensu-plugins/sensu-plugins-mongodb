@@ -153,6 +153,9 @@ def main(argv):
     p.add_option('-d', '--database', action='store', dest='database', default='admin', help='Specify the database to check')
     p.add_option('--all-databases', action='store_true', dest='all_databases', default=False, help='Check all databases (action database_size)')
     p.add_option('-s', '--ssl-enabled', dest='ssl_enabled', default=False, action='callback', callback=optional_arg(True), help='Connect using SSL')
+    p.add_option('-e', '--ssl-certfile', dest='ssl_certfile', default=None, action='store', help='The certificate file used to identify the local connection against mongod')
+    p.add_option('-k', '--ssl-keyfile', dest='ssl_keyfile', default=None, action='store', help='The private key used to identify the local connection against mongod')
+    p.add_option('-a', '--ssl-ca-certs', dest='ssl_ca_certs', default=None, action='store', help='The set of concatenated CA certificates, which are used to validate certificates passed from the other end of the connection')
     p.add_option('-r', '--replicaset', dest='replicaset', default=None, action='callback', callback=optional_arg(True), help='Connect to replicaset')
     p.add_option('-q', '--querytype', action='store', dest='query_type', default='query', help='The query type to check [query|insert|update|delete|getmore|command] from queries_per_second')
     p.add_option('-c', '--collection', action='store', dest='collection', default='admin', help='Specify the collection to check')
@@ -178,6 +181,9 @@ def main(argv):
     max_lag = options.max_lag
     database = options.database
     ssl_enabled = options.ssl_enabled
+    ssl_certfile = options.ssl_certfile
+    ssl_keyfile = options.ssl_keyfile
+    ssl_ca_certs = options.ssl_ca_certs
     replicaset = options.replicaset
 
     if action == 'replica_primary' and replicaset is None:
@@ -189,7 +195,7 @@ def main(argv):
     # moving the login up here and passing in the connection
     #
     start = time.time()
-    err, con = mongo_connect(host, port, ssl_enabled, user, passwd, replicaset)
+    err, con = mongo_connect(host, port, ssl_enabled, ssl_certfile, ssl_keyfile, ssl_ca_certs, user, passwd, replicaset)
     if err != 0:
         return err
 
@@ -267,14 +273,14 @@ def main(argv):
         return check_connect(host, port, warning, critical, perf_data, user, passwd, conn_time)
 
 
-def mongo_connect(host=None, port=None, ssl_enabled=False, user=None, passwd=None, replica=None):
+def mongo_connect(host=None, port=None, ssl_enabled=False, ssl_certfile=None, ssl_keyfile=None, ssl_ca_certs=None, user=None, passwd=None, replica=None):
     try:
         # ssl connection for pymongo > 2.3
         if pymongo.version >= "2.3":
             if replica is None:
-                con = pymongo.MongoClient(host, port, ssl=ssl_enabled)
+                con = pymongo.MongoClient(host, port, ssl=ssl_enabled, ssl_certfile=ssl_certfile, ssl_keyfile=ssl_keyfile, ssl_ca_certs=ssl_ca_certs)
             else:
-                con = pymongo.Connection(host, port, read_preference=pymongo.ReadPreference.SECONDARY, ssl=ssl_enabled, replicaSet=replica, network_timeout=10)
+                con = pymongo.Connection(host, port, read_preference=pymongo.ReadPreference.SECONDARY, ssl=ssl_enabled, ssl_certfile=ssl_certfile, ssl_keyfile=ssl_keyfile, ssl_ca_certs=ssl_ca_certs, replicaSet=replica, network_timeout=10)
         else:
             if replica is None:
                 con = pymongo.Connection(host, port, slave_okay=True, network_timeout=10)

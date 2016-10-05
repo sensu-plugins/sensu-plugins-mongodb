@@ -57,6 +57,31 @@ class CheckMongodbMetric < Sensu::Plugin::Check::CLI
          long: '--password PASSWORD',
          default: nil
 
+  option :ssl,
+         description: 'Connect using SSL',
+         long: '--ssl',
+         default: false
+
+  option :ssl_cert,
+         description: 'The certificate file used to identify the local connection against mongod',
+         long: '--ssl-cert SSL_CERT',
+         default: ''
+
+  option :ssl_key,
+         description: 'The private key used to identify the local connection against mongod',
+         long: '--ssl-key SSL_KEY',
+         default: ''
+
+  option :ssl_ca_cert,
+         description: 'The set of concatenated CA certificates, which are used to validate certificates passed from the other end of the connection',
+         long: '--ssl-ca-cert SSL_CA_CERT',
+         default: ''
+
+  option :ssl_verify,
+         description: 'Whether or not to do peer certification validation',
+         long: '--ssl-verify',
+         default: false
+
   option :debug,
          description: 'Enable debug',
          long: '--debug',

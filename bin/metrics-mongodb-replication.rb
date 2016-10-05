@@ -62,6 +62,31 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
          long: '--password PASSWORD',
          default: nil
 
+  option :ssl,
+         description: 'Connect using SSL',
+         long: '--ssl',
+         default: false
+
+  option :ssl_cert,
+         description: 'The certificate file used to identify the local connection against mongod',
+         long: '--ssl-cert SSL_CERT',
+         default: ''
+
+  option :ssl_key,
+         description: 'The private key used to identify the local connection against mongod',
+         long: '--ssl-key SSL_KEY',
+         default: ''
+
+  option :ssl_ca_cert,
+         description: 'The set of concatenated CA certificates, which are used to validate certificates passed from the other end of the connection',
+         long: '--ssl-ca-cert SSL_CA_CERT',
+         default: ''
+
+  option :ssl_verify,
+         description: 'Whether or not to do peer certification validation',
+         long: '--ssl-verify',
+         default: false
+
   option :scheme,
          description: 'Metric naming scheme',
          long: '--scheme SCHEME',
@@ -87,18 +112,25 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
   end
 
   # connects to mongo and sets @db, works with MongoClient < 2.0.0
-  def connect_mongo_db(host, port, db_name, db_user, db_password)
+  def connect_mongo_db
     if Gem.loaded_specs['mongo'].version < Gem::Version.new('2.0.0')
       mongo_client = MongoClient.new(host, port)
       @db = mongo_client.db(db_name)
       @db.authenticate(db_user, db_password) unless db_user.nil?
     else
-      address_str = "#{host}:#{port}"
+      address_str = "#{config[:host]}:#{config[:port]}"
       client_opts = {}
-      client_opts[:database] = db_name
-      unless db_user.nil?
-        client_opts[:user] = db_user
-        client_opts[:password] = db_password
+      client_opts[:database] = 'admin'
+      unless config[:user].nil?
+        client_opts[:user] = config[:user]
+        client_opts[:password] = config[:password]
+      end
+      if config[:ssl]
+        client_opts[:ssl] = true
+        client_opts[:ssl_cert] = config[:ssl_cert]
+        client_opts[:ssl_key] = config[:ssl_key]
+        client_opts[:ssl_ca_cert] = config[:ssl_ca_cert]
+        client_opts[:ssl_verify] = config[:ssl_verify]
       end
       mongo_client = Mongo::Client.new([address_str], client_opts)
       @db = mongo_client.database
@@ -114,13 +146,8 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
       config_debug[:password] = '***'
       puts 'arguments:' + config_debug.inspect
     end
-    host = config[:host]
-    port = config[:port]
-    db_name = 'admin'
-    db_user = config[:user]
-    db_password = config[:password]
 
-    connect_mongo_db(host, port, db_name, db_user, db_password)
+    connect_mongo_db
 
     _result = false
     # check if master
