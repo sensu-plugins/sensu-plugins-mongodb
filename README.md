@@ -11,7 +11,9 @@
 ## Files
  * bin/check-mongodb.py
  * bin/check-mongodb.rb - wrapper for check-mongodb.py
+ * bin/check-mongodb-metric.rb
  * bin/metrics-mongodb.rb
+ * bin/metrics-mongodb-replication.rb
 
 ## Usage
 
