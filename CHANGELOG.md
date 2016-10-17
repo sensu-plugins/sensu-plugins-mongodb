@@ -5,7 +5,7 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 
 ## [Unreleased]
 
-[1.1.0] - 2016-10-17
+## [1.1.0] - 2016-10-17
 ### Added
 - Inclusion of check-mongodb-metrics.rb to perform checks against the same data metrics-mongodb.rb produces. (@stefano-pogliani)
 - Inclusion of lib/sensu-plugins-mongodb/metics.rb to share metric collection logic. (@stefano-pogliani)
