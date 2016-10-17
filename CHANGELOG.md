@@ -18,8 +18,8 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 ### Changed
 - Moved most of metrics-mongodb.rb code to shared library. (@stefano-pogliani)
 - MongoDB version checks to skip missing metrics. (@stefano-pogliani)
-- Renamed some metrics to become standard with MongoDB 3.2 equivalent (@stefano-pogliani)
-  (so checks/queries don't have to bother with version detection).
+- Renamed some metrics to become standard with MongoDB 3.2 equivalent
+  (so checks/queries don't have to bother with version detection). (@stefano-pogliani)
 
 ## [1.0.0] - 2016-06-03
 ### Removed
