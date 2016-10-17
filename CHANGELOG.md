@@ -4,7 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
-## Added
+
+[1.1.0] - 2016-10-17
+### Added
 - Inclusion of check-mongodb-metrics.rb to perform checks against the same data metrics-mongodb.rb produces. (@stefano-pogliani)
 - Inclusion of lib/sensu-plugins-mongodb/metics.rb to share metric collection logic. (@stefano-pogliani)
 - Tests to the metrics processing shared code.  (@stefano-pogliani)
@@ -13,7 +15,7 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 - Updated metrics-mongodb.rb to include version checks to ensure execution in mongodb > 3.2.x (@RycroftSolutions)
 - Additional metrics not included in original metrics-mongodb.rb (@RycroftSolutions)
 
-## Changed
+### Changed
 - Moved most of metrics-mongodb.rb code to shared library. (@stefano-pogliani)
 - MongoDB version checks to skip missing metrics. (@stefano-pogliani)
 - Renamed some metrics to become standard with MongoDB 3.2 equivalent (@stefano-pogliani)
