@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
+### Fixed
+- Setting read preference for pymongo 2.2+ in check-mongodb.py
 
 ## [1.1.0] - 2016-10-17
 ### Added
