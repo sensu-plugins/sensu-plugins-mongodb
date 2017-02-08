@@ -6,6 +6,7 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 ## [Unreleased]
 ### Fixed
 - Setting read preference for pymongo 2.2+ in check-mongodb.py
+- Sort replication members to ensure the primary is the first element in metrics-mongodb-replication.rb
 
 ## [1.1.0] - 2016-10-17
 ### Added
