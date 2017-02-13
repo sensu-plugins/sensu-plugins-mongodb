@@ -191,6 +191,13 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
       metrics = {}
       replication_members = replication_status['members']
       unless replication_members.nil?
+        state_map = {
+          'PRIMARY' => 1,
+          'SECONDARY' => 2
+        }
+        state_map.default = 3
+        replication_members.sort! { |x, y| state_map[x['stateStr']] <=> state_map[y['stateStr']] }
+
         replication_members.each do |replication_member_details|
           metrics.update(gather_replication_member_metrics(replication_member_details))
           member_id = replication_member_details['_id']
