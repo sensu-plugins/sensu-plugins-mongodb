@@ -6,6 +6,7 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 ## [Unreleased]
 ### Fixed
 - Setting read preference for pymongo 2.2+ in check-mongodb.py
+- Fixed mongo replication lag percent check showing password in plain text 
 
 ## [1.1.0] - 2016-10-17
 ### Added
