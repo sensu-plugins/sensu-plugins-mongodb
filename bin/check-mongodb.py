@@ -427,7 +427,7 @@ def check_rep_lag(con, host, port, warning, critical, percent, perf_data, max_la
                             data = data + member['name'] + " lag=%d;" % replicationLag
                             maximal_lag = max(maximal_lag, replicationLag)
                     if percent:
-                        err, con = mongo_connect(primary_node['name'].split(':')[0], int(primary_node['name'].split(':')[1]), False, user, passwd)
+                        err, con = mongo_connect(primary_node['name'].split(':')[0], int(primary_node['name'].split(':')[1]), False, user=user, passwd=passwd)
                         if err != 0:
                             return err
                         primary_timediff = replication_get_time_diff(con)
@@ -459,7 +459,7 @@ def check_rep_lag(con, host, port, warning, critical, percent, perf_data, max_la
                 lag = float(optime_lag.seconds + optime_lag.days * 24 * 3600)
 
             if percent:
-                err, con = mongo_connect(primary_node['name'].split(':')[0], int(primary_node['name'].split(':')[1]), False, user, passwd)
+                err, con = mongo_connect(primary_node['name'].split(':')[0], int(primary_node['name'].split(':')[1]), False, user=user, passwd=passwd)
                 if err != 0:
                     return err
                 primary_timediff = replication_get_time_diff(con)
