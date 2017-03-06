@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
+
+## [1.2.0] - 2017-03-06
 ### Fixed
 - `check-mongodb.py`: Set read preference for pymongo 2.2+ to fix 'General MongoDB Error: can't set attribute' (@boutetnico)
 - `check-mongodb.py`: Fix mongo replication lag percent check showing password in plain text (@furbiesandbeans)
@@ -87,7 +89,8 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 ### Added
 - initial release
 
-[Unreleased]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.1.0...HEAD
+[Unreleased]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.2.0...HEAD
+[1.2.0]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.1.0...1.2.0
 [1.1.0]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/0.0.8...1.0.0
 [0.0.8]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/0.0.7...0.0.8
