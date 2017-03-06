@@ -33,7 +33,7 @@ Gem::Specification.new do |s|
   s.version                = SensuPluginsMongoDB::Version::VER_STRING
 
   s.add_runtime_dependency 'bson',              '~> 4.0'
-  s.add_runtime_dependency 'mongo',             '2.2.2'
+  s.add_runtime_dependency 'mongo',             '2.4.1'
   s.add_runtime_dependency 'sensu-plugin',      '~> 1.2'
 
   s.add_development_dependency 'bundler',                   '~> 1.7'
