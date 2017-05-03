@@ -278,9 +278,15 @@ def mongo_connect(host=None, port=None, ssl_enabled=False, ssl_certfile=None, ss
         # ssl connection for pymongo > 2.3
         if pymongo.version >= "2.3":
             if replica is None:
-                con = pymongo.MongoClient(host, port, ssl=ssl_enabled, ssl_certfile=ssl_certfile, ssl_keyfile=ssl_keyfile, ssl_ca_certs=ssl_ca_certs)
+                if ssl_enabled:  
+                    con = pymongo.MongoClient(host, port, ssl=ssl_enabled, ssl_certfile=ssl_certfile, ssl_keyfile=ssl_keyfile, ssl_ca_certs=ssl_ca_certs)
+                else: 
+                    con = pymongo.MongoClient(host, port)
             else:
-                con = pymongo.Connection(host, port, read_preference=pymongo.ReadPreference.SECONDARY, ssl=ssl_enabled, ssl_certfile=ssl_certfile, ssl_keyfile=ssl_keyfile, ssl_ca_certs=ssl_ca_certs, replicaSet=replica, network_timeout=10)
+                if ssl_enabled: 
+                    con = pymongo.Connection(host, port, read_preference=pymongo.ReadPreference.SECONDARY, ssl=ssl_enabled, ssl_certfile=ssl_certfile, ssl_keyfile=ssl_keyfile, ssl_ca_certs=ssl_ca_certs, replicaSet=replica, network_timeout=10)
+                else: 
+                    con = pymongo.Connection(host, port, read_preference=pymongo.ReadPreference.SECONDARY, replicaSet=replica, network_timeout=10)
         else:
             if replica is None:
                 con = pymongo.Connection(host, port, slave_okay=True, network_timeout=10)
