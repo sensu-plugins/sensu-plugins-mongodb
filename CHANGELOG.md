@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
+## [1.2.1] - 2017-05-07
 ### Fixed
 - `check-mongodb.py`: fixed issue of param building with not/using ssl connections (@s-schweer)
 
@@ -91,7 +92,8 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 ### Added
 - initial release
 
-[Unreleased]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.2.0...HEAD
+[Unreleased]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.2.1...HEAD
+[1.2.1]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.1.0...1.2.0
 [1.1.0]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/0.0.8...1.0.0
