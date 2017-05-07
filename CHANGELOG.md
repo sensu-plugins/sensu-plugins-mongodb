@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
+### Fixed
+- `check-mongodb.py`: will now correctly crit on connection issues (@majormoses)
 ## [1.2.1] - 2017-05-07
 ### Fixed
 - `check-mongodb.py`: fixed issue of param building with not/using ssl connections (@s-schweer)

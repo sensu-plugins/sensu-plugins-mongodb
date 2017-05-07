@@ -278,15 +278,21 @@ def mongo_connect(host=None, port=None, ssl_enabled=False, ssl_certfile=None, ss
         # ssl connection for pymongo > 2.3
         if pymongo.version >= "2.3":
             if replica is None:
-                if ssl_enabled:  
+                if ssl_enabled:
                     con = pymongo.MongoClient(host, port, ssl=ssl_enabled, ssl_certfile=ssl_certfile, ssl_keyfile=ssl_keyfile, ssl_ca_certs=ssl_ca_certs)
-                else: 
+                else:
                     con = pymongo.MongoClient(host, port)
             else:
-                if ssl_enabled: 
+                if ssl_enabled:
                     con = pymongo.Connection(host, port, read_preference=pymongo.ReadPreference.SECONDARY, ssl=ssl_enabled, ssl_certfile=ssl_certfile, ssl_keyfile=ssl_keyfile, ssl_ca_certs=ssl_ca_certs, replicaSet=replica, network_timeout=10)
-                else: 
+                else:
                     con = pymongo.Connection(host, port, read_preference=pymongo.ReadPreference.SECONDARY, replicaSet=replica, network_timeout=10)
+            try:
+                # https://api.mongodb.com/python/current/api/pymongo/mongo_client.html
+                # The ismaster command is cheap and does not require auth.
+                con.admin.command('ismaster', connectTimeoutMS=10000)
+            except Exception, e:
+                return exit_with_general_critical(e), None
         else:
             if replica is None:
                 con = pymongo.Connection(host, port, slave_okay=True, network_timeout=10)
