@@ -12,6 +12,7 @@ module SensuPluginsMongoDB
       @config = config
       @connected = false
       @db = nil
+      @mongo_client = nil
     end
 
     # Connects to a mongo database.
@@ -22,38 +23,16 @@ module SensuPluginsMongoDB
         raise 'Already connected to a database'
       end
 
-      @connected = true
-      host = @config[:host]
-      port = @config[:port]
       db_user = @config[:user]
       db_password = @config[:password]
-      ssl = @config[:ssl]
-      ssl_cert = @config[:ssl_cert]
-      ssl_key = @config[:ssl_key]
-      ssl_ca_cert = @config[:ssl_ca_cert]
-      ssl_verify = @config[:ssl_verify]
 
       if Gem.loaded_specs['mongo'].version < Gem::Version.new('2.0.0')
-        mongo_client = MongoClient.new(host, port)
-        @db = mongo_client.db(db_name)
+        @mongo_client = get_mongo_client(db_name)
+        @db = @mongo_client.db(db_name)
         @db.authenticate(db_user, db_password) unless db_user.nil?
       else
-        address_str = "#{host}:#{port}"
-        client_opts = {}
-        client_opts[:database] = db_name
-        unless db_user.nil?
-          client_opts[:user] = db_user
-          client_opts[:password] = db_password
-        end
-        if ssl
-          client_opts[:ssl] = true
-          client_opts[:ssl_cert] = ssl_cert
-          client_opts[:ssl_key] = ssl_key
-          client_opts[:ssl_ca_cert] = ssl_ca_cert
-          client_opts[:ssl_verify] = ssl_verify
-        end
-        mongo_client = Mongo::Client.new([address_str], client_opts)
-        @db = mongo_client.database
+        @mongo_client = get_mongo_client(db_name)
+        @db = @mongo_client.database
       end
     end
 
@@ -169,6 +148,25 @@ module SensuPluginsMongoDB
           server_metrics['cursors.open.singleTarget'] = open['singleTarget']
         end
       end
+
+      # Database Sizes
+      @mongo_client.database_names.each do |name|
+        @mongo_client.use(name)
+        db = @mongo_client.database
+        result = db.command(dbstats: 1).documents.first
+        server_metrics["databaseSizes.#{name}.collections"] = result['collections']
+        server_metrics["databaseSizes.#{name}.objects"] = result['objects']
+        server_metrics["databaseSizes.#{name}.avgObjSize"] = result['avgObjSize']
+        server_metrics["databaseSizes.#{name}.dataSize"] = result['dataSize']
+        server_metrics["databaseSizes.#{name}.storageSize"] = result['storageSize']
+        server_metrics["databaseSizes.#{name}.numExtents"] = result['numExtents']
+        server_metrics["databaseSizes.#{name}.indexes"] = result['indexes']
+        server_metrics["databaseSizes.#{name}.indexSize"] = result['indexSize']
+        server_metrics["databaseSizes.#{name}.fileSize"] = result['fileSize']
+        server_metrics["databaseSizes.#{name}.nsSizeMB"] = result['nsSizeMB']
+      end
+      # Reset back to previous database
+      @mongo_client.use(@db.name)
 
       # Journaling (durability)
       if server_status.key?('dur')
@@ -335,6 +333,41 @@ module SensuPluginsMongoDB
         clean_metrics[k] = v
       end
       clean_metrics
+    end
+
+    private
+
+    def get_mongo_client(db_name)
+      @connected = true
+      host = @config[:host]
+      port = @config[:port]
+      db_user = @config[:user]
+      db_password = @config[:password]
+      ssl = @config[:ssl]
+      ssl_cert = @config[:ssl_cert]
+      ssl_key = @config[:ssl_key]
+      ssl_ca_cert = @config[:ssl_ca_cert]
+      ssl_verify = @config[:ssl_verify]
+
+      if Gem.loaded_specs['mongo'].version < Gem::Version.new('2.0.0')
+        MongoClient.new(host, port)
+      else
+        address_str = "#{host}:#{port}"
+        client_opts = {}
+        client_opts[:database] = db_name
+        unless db_user.nil?
+          client_opts[:user] = db_user
+          client_opts[:password] = db_password
+        end
+        if ssl
+          client_opts[:ssl] = true
+          client_opts[:ssl_cert] = ssl_cert
+          client_opts[:ssl_key] = ssl_key
+          client_opts[:ssl_ca_cert] = ssl_ca_cert
+          client_opts[:ssl_verify] = ssl_verify
+        end
+        Mongo::Client.new([address_str], client_opts)
+      end
     end
   end
 end
