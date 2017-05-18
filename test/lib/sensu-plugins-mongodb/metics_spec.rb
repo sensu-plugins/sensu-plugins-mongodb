@@ -20,6 +20,7 @@ describe 'SensuPluginsMongoDB::Metrics' do
     @db = {}
     allow(@client).to receive(:db).and_return(@db)
     allow(@client).to receive(:database).and_return(@db)
+    allow(@client).to receive(:database_names).and_return(['admin'])
     allow(@db).to receive(:authenticate).and_return(@db)
 
     if Gem.loaded_specs['mongo'].version < Gem::Version.new('2.0.0')
@@ -36,6 +37,9 @@ describe 'SensuPluginsMongoDB::Metrics' do
       )
       allow(@db).to receive(:command).with('serverStatus' => 1).and_return(
         fixture_db_response('status_2.6.11.json')
+      )
+      allow(@db).to receive(:command).with(dbstats: 1).and_return(
+        fixture_db_response('stats_2.6.11.json')
       )
     end
 
@@ -73,6 +77,16 @@ describe 'SensuPluginsMongoDB::Metrics' do
         'cursors.open.pinned' => 0,
         'cursors.open.total' => 0,
         'cursors.timedOut' => 0,
+        'databaseSizes.admin.collections' => 4,
+        'databaseSizes.admin.objects' => 11,
+        'databaseSizes.admin.avgObjSize' => 106.18181818181819,
+        'databaseSizes.admin.dataSize' => 1168.0,
+        'databaseSizes.admin.storageSize' => 286_72.0,
+        'databaseSizes.admin.numExtents' => 4,
+        'databaseSizes.admin.indexes' => 3,
+        'databaseSizes.admin.indexSize' => 245_28.0,
+        'databaseSizes.admin.fileSize' => 671_088_64.0,
+        'databaseSizes.admin.nsSizeMB' => 16,
         'indexes.accesses' => 2,
         'indexes.hits' => 2,
         'indexes.missRatio' => '0.00000',
@@ -161,6 +175,9 @@ describe 'SensuPluginsMongoDB::Metrics' do
       allow(@db).to receive(:command).with('serverStatus' => 1).and_return(
         fixture_db_response('status_3.2.9.json')
       )
+      allow(@db).to receive(:command).with(dbstats: 1).and_return(
+        fixture_db_response('stats_3.2.9.json')
+      )
     end
 
     it 'checks for master' do
@@ -193,6 +210,16 @@ describe 'SensuPluginsMongoDB::Metrics' do
         'cursors.open.pinned' => 0,
         'cursors.open.total' => 0,
         'cursors.timedOut' => 0,
+        'databaseSizes.admin.collections' => 4,
+        'databaseSizes.admin.objects' => 11,
+        'databaseSizes.admin.avgObjSize' => 106.18181818181819,
+        'databaseSizes.admin.dataSize' => 1168.0,
+        'databaseSizes.admin.storageSize' => 286_72.0,
+        'databaseSizes.admin.numExtents' => 4,
+        'databaseSizes.admin.indexes' => 3,
+        'databaseSizes.admin.indexSize' => 245_28.0,
+        'databaseSizes.admin.fileSize' => 671_088_64.0,
+        'databaseSizes.admin.nsSizeMB' => 16,
         'lock.clients_readers' => 0,
         'lock.clients_total' => 8,
         'lock.clients_writers' => 0,
