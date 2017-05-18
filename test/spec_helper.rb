@@ -1,6 +1,6 @@
-require 'codeclimate-test-reporter'
+require 'simplecov'
 require 'json'
-CodeClimate::TestReporter.start
+SimpleCov.start
 
 RSpec.configure do |c|
   c.formatter = :documentation

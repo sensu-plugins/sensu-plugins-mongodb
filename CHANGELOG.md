@@ -3,6 +3,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachangelog.com/)
 
+### Added
+- Support for database size metrics (@naemono)
+- Tests covering returning database size metrics (@naemono)
+
 ## [Unreleased]
 ## [1.2.2]
 ### Fixed

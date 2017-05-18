@@ -1,0 +1,22 @@
+{
+	"db" : "admin",
+	"collections" : 4,
+	"objects" : 11,
+	"avgObjSize" : 106.18181818181819,
+	"dataSize" : 1168,
+	"storageSize" : 28672,
+	"numExtents" : 4,
+	"indexes" : 3,
+	"indexSize" : 24528,
+	"fileSize" : 67108864,
+	"nsSizeMB" : 16,
+	"extentFreeList" : {
+		"num" : 0,
+		"totalSize" : 0
+	},
+	"dataFileVersion" : {
+		"major" : 4,
+		"minor" : 22
+	},
+	"ok" : 1
+}
