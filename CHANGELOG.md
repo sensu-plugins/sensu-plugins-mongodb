@@ -7,6 +7,8 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 
 ## [1.3.0]
 ### Added
+- Support for returning replicaset state metrics (@naemono)
+- Tests covering returning replicaset state metrics (@naemono)
 - Support for database size metrics (@naemono)
 - Tests covering returning database size metrics (@naemono)
 

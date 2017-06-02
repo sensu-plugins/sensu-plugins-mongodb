@@ -1,0 +1,6 @@
+{
+  "set": "myreplicasetid",
+  "myState": 1,
+  "term": 2,
+  "heartbeatIntervalMillis": 2000
+}

@@ -40,6 +40,9 @@ describe 'SensuPluginsMongoDB::Metrics' do
       allow(@db).to receive(:command).with('serverStatus' => 1).and_return(
         fixture_db_response('status_2.6.11.json')
       )
+      allow(@db).to receive(:command).with('replSetGetStatus' => 1).and_return(
+        fixture_db_response('replicaset_status_2.6.11.json')
+      )
       allow(@db).to receive(:command).with(dbstats: 1).and_return(
         fixture_db_response('stats_2.6.11.json')
       )
@@ -145,6 +148,7 @@ describe 'SensuPluginsMongoDB::Metrics' do
         'metrics.repl.preload.docs_totalMillis' => 0,
         'metrics.repl.preload.indexes_num' => 0,
         'metrics.repl.preload.indexes_totalMillis' => 0,
+        'metrics.replicaset.state' => 1,
         'metrics.storage.freelist.search_bucketExhauseted' => 0,
         'metrics.storage.freelist.search_requests' => 6,
         'metrics.storage.freelist.search_scanned' => 11,
@@ -176,6 +180,9 @@ describe 'SensuPluginsMongoDB::Metrics' do
       )
       allow(@db).to receive(:command).with('serverStatus' => 1).and_return(
         fixture_db_response('status_3.2.9.json')
+      )
+      allow(@db).to receive(:command).with('replSetGetStatus' => 1).and_return(
+        fixture_db_response('replicaset_status_3.2.9.json')
       )
       allow(@db).to receive(:command).with(dbstats: 1).and_return(
         fixture_db_response('stats_3.2.9.json')
@@ -269,6 +276,7 @@ describe 'SensuPluginsMongoDB::Metrics' do
         'metrics.repl.preload.docs_totalMillis' => 0,
         'metrics.repl.preload.indexes_num' => 0,
         'metrics.repl.preload.indexes_totalMillis' => 0,
+        'metrics.replicaset.state' => 1,
         'metrics.storage.freelist.search_bucketExhauseted' => 0,
         'metrics.storage.freelist.search_requests' => 0,
         'metrics.storage.freelist.search_scanned' => 0,

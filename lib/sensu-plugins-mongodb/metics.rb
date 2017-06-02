@@ -88,12 +88,27 @@ module SensuPluginsMongoDB
       end
     end
 
+    # Fetches the replicaset status of the server (which includes the metrics).
+    #
+    # @return [Mash, nil] the document showing the replicaset status or nil.
+    def replicaset_status
+      status = get_mongo_doc('replSetGetStatus' => 1)
+      return nil if status.nil?
+      return status
+    rescue StandardError => e
+      if @debug
+        puts 'Error checking replSetGetStatus: ' + e.message
+        puts e.backtrace.inspect
+      end
+    end
+
     # Fetches metrics for the server we are connected to.
     #
     # @return [Mash] the metrics for the server.
     # rubocop:disable Metrics/AbcSize
     def server_metrics
       server_status = self.server_status
+      replicaset_status = self.replicaset_status
       server_metrics = {}
       # Handle versions like "2.6.11-pre" etc
       mongo_version = server_status['version'].gsub(/[^0-9\.]/i, '')
@@ -307,6 +322,12 @@ module SensuPluginsMongoDB
       server_metrics['metrics.repl.preload.docs_totalMillis'] = repl['preload']['docs']['totalMillis']
       server_metrics['metrics.repl.preload.indexes_num'] = repl['preload']['indexes']['num']
       server_metrics['metrics.repl.preload.indexes_totalMillis'] = repl['preload']['indexes']['totalMillis']
+
+      # Metrics (replicaset status)
+      # MongoDB will fail if not running with --replSet, hence the check for nil
+      unless replicaset_status.nil?
+        server_metrics['metrics.replicaset.state'] = replicaset_status['myState']
+      end
 
       # Metrics (storage)
       if Gem::Version.new(mongo_version) >= Gem::Version.new('2.6.0')
