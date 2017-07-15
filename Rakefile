@@ -6,8 +6,6 @@ require 'rubocop/rake_task'
 require 'yard'
 require 'yard/rake/yardoc_task'
 
-args = [:spec, :make_bin_executable, :yard, :rubocop, :check_binstubs]
-
 YARD::Rake::YardocTask.new do |t|
   OTHER_PATHS = %w().freeze
   t.files = ['lib/**/*.rb', 'bin/**/*.rb', OTHER_PATHS]
@@ -37,4 +35,4 @@ task :check_binstubs do
   end
 end
 
-task default: args
+task default: [:spec, :make_bin_executable, :yard, :rubocop, :check_binstubs]
