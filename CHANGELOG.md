@@ -4,11 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
-
-## [1.3.0]
 ### Added
 - Support for returning replicaset state metrics (@naemono)
 - Tests covering returning replicaset state metrics (@naemono)
+
+## [1.3.0]
+### Added
 - Support for database size metrics (@naemono)
 - Tests covering returning database size metrics (@naemono)
 
