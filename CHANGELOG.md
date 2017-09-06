@@ -7,6 +7,7 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 ### Added
 - Support for returning replicaset state metrics (@naemono)
 - Tests covering returning replicaset state metrics (@naemono)
+- Ruby 2.4.1 testing
 
 ## [1.3.0]
 ### Added
