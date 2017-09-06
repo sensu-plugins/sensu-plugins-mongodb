@@ -4,17 +4,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
+
+## [1.4.0] - 2017-09-05
 ### Added
 - Support for returning replicaset state metrics (@naemono)
 - Tests covering returning replicaset state metrics (@naemono)
 - Ruby 2.4.1 testing
 
-## [1.3.0]
+## [1.3.0] - 2017-05-22
 ### Added
 - Support for database size metrics (@naemono)
 - Tests covering returning database size metrics (@naemono)
 
-## [1.2.2]
+## [1.2.2] - 2017-05-08
 ### Fixed
 - `check-mongodb.py`: will now correctly crit on connection issues (@majormoses)
 ## [1.2.1] - 2017-05-07
@@ -105,7 +107,8 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 ### Added
 - initial release
 
-[Unreleased]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.3.0...HEAD
+[Unreleased]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.4.0...HEAD
+[1.4.0]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.3.0...1.4.0
 [1.3.0]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.2.1...1.3.0
 [1.2.1]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.1.0...1.2.0
