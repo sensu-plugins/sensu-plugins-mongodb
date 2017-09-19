@@ -11,6 +11,9 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 - Tests covering returning replicaset state metrics (@naemono)
 - Ruby 2.4.1 testing
 
+### Fixed
+- Support for database size metrics (@fandrews)
+
 ## [1.3.0] - 2017-05-22
 ### Added
 - Support for database size metrics (@naemono)
