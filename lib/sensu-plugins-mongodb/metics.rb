@@ -166,7 +166,7 @@ module SensuPluginsMongoDB
 
       # Database Sizes
       @mongo_client.database_names.each do |name|
-        @mongo_client.use(name)
+        @mongo_client = @mongo_client.use(name)
         db = @mongo_client.database
         result = db.command(dbstats: 1).documents.first
         server_metrics["databaseSizes.#{name}.collections"] = result['collections']
@@ -181,7 +181,7 @@ module SensuPluginsMongoDB
         server_metrics["databaseSizes.#{name}.nsSizeMB"] = result['nsSizeMB']
       end
       # Reset back to previous database
-      @mongo_client.use(@db.name)
+      @mongo_client = @mongo_client.use(@db.name)
 
       # Journaling (durability)
       if server_status.key?('dur')

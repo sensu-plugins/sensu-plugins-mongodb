@@ -21,7 +21,7 @@ describe 'SensuPluginsMongoDB::Metrics' do
     allow(@client).to receive(:db).and_return(@db)
     allow(@client).to receive(:database).and_return(@db)
     allow(@client).to receive(:database_names).and_return(['admin'])
-    allow(@client).to receive(:use).and_return(nil)
+    allow(@client).to receive(:use).and_return(@client)
     allow(@db).to receive(:authenticate).and_return(@db)
     allow(@db).to receive(:name).and_return('admin')
 
