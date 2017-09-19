@@ -5,6 +5,12 @@ This CHANGELOG follows the format located [here](https://github.com/sensu-plugin
 
 ## [Unreleased]
 
+### Breaking Change
+- bumped requirement of `sensu-plugin` [to 2.0](https://github.com/sensu-plugins/sensu-plugin/blob/master/CHANGELOG.md#v200---2017-03-29) (@majormoses)
+
+### Fixed
+- check-mongodb-metric.rb: make `--metric` required since it is (@majormoses)
+
 ## [1.4.1] - 2017-09-23
 ### Fixed
 - Support for database size metrics (@fandrews)

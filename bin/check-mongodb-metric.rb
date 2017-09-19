@@ -95,7 +95,8 @@ class CheckMongodbMetric < Sensu::Plugin::Check::CLI
   option :metric,
          description: 'Name of the metric to check',
          long: '--metric METRIC',
-         short: '-m METRIC'
+         short: '-m METRIC',
+         required: true
 
   option :warn,
          description: 'Warn if values are above this threshold',
