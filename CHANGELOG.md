@@ -5,6 +5,7 @@ This CHANGELOG follows the format located [here](https://github.com/sensu-plugin
 
 ## [Unreleased]
 
+## [2.0.0] - 2017-09-23
 ### Breaking Change
 - bumped requirement of `sensu-plugin` [to 2.0](https://github.com/sensu-plugins/sensu-plugin/blob/master/CHANGELOG.md#v200---2017-03-29) (@majormoses)
 
@@ -120,7 +121,8 @@ This CHANGELOG follows the format located [here](https://github.com/sensu-plugin
 ### Added
 - initial release
 
-[Unreleased]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.4.1...HEAD
+[Unreleased]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/2.0.0...HEAD
+[2.0.0]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.4.1...2.0.0
 [1.4.1]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.4.0...1.4.1
 [1.4.0]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.3.0...1.4.0
 [1.3.0]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.2.1...1.3.0
