@@ -1,18 +1,22 @@
-#Change Log
+# Change Log
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachangelog.com/)
+This CHANGELOG follows the format located [here](https://github.com/sensu-plugins/community/blob/master/HOW_WE_CHANGELOG.md)
 
 ## [Unreleased]
+
+## [1.4.1] - 2017-09-23
+### Fixed
+- Support for database size metrics (@fandrews)
+
+### Changed
+- updated changelog guidelines location (@majormoses)
 
 ## [1.4.0] - 2017-09-05
 ### Added
 - Support for returning replicaset state metrics (@naemono)
 - Tests covering returning replicaset state metrics (@naemono)
 - Ruby 2.4.1 testing
-
-### Fixed
-- Support for database size metrics (@fandrews)
 
 ## [1.3.0] - 2017-05-22
 ### Added
@@ -110,7 +114,8 @@ This CHANGELOG follows the format listed at [Keep A Changelog](http://keepachang
 ### Added
 - initial release
 
-[Unreleased]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.4.0...HEAD
+[Unreleased]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.4.1...HEAD
+[1.4.1]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.4.0...1.4.1
 [1.4.0]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.3.0...1.4.0
 [1.3.0]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.2.1...1.3.0
 [1.2.1]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.2.0...1.2.1
