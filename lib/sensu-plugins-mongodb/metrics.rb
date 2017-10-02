@@ -376,6 +376,7 @@ module SensuPluginsMongoDB
         address_str = "#{host}:#{port}"
         client_opts = {}
         client_opts[:database] = db_name
+        client_opts[:connect] = :direct
         unless db_user.nil?
           client_opts[:user] = db_user
           client_opts[:password] = db_password
