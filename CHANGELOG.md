@@ -5,6 +5,9 @@ This CHANGELOG follows the format located [here](https://github.com/sensu-plugin
 
 ## [Unreleased]
 
+### Fixed
+- updating the read preferences for `2.2`-`2.8` pymongo clients (@urg)
+
 ## [2.0.0] - 2017-09-23
 ### Breaking Change
 - bumped requirement of `sensu-plugin` [to 2.0](https://github.com/sensu-plugins/sensu-plugin/blob/master/CHANGELOG.md#v200---2017-03-29) (@majormoses)
