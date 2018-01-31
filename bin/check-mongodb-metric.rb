@@ -28,7 +28,7 @@
 #
 
 require 'sensu-plugin/check/cli'
-require 'sensu-plugins-mongodb/metics'
+require 'sensu-plugins-mongodb/metrics'
 require 'mongo'
 include Mongo
 

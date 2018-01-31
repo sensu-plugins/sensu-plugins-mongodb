@@ -5,6 +5,9 @@ This CHANGELOG follows the format located [here](https://github.com/sensu-plugin
 
 ## [Unreleased]
 
+### Fixed
+- renamed library file `metics` to `metrics` and updated all refrences in code to it (@majormoses)
+
 ## [2.0.1] - 2017-10-19
 ### Fixed
 - updating the read preferences for `2.2`-`2.8` pymongo clients (@urg)
