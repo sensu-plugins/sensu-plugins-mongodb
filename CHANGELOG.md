@@ -5,6 +5,10 @@ This CHANGELOG follows the format located [here](https://github.com/sensu-plugin
 
 ## [Unreleased]
 
+## [2.0.2] - 2018-02-14
+### New Feature
+- Adds WiredTiger Matrics (@parin921996)
+
 ## [2.0.1] - 2017-10-19
 ### Fixed
 - updating the read preferences for `2.2`-`2.8` pymongo clients (@urg)
