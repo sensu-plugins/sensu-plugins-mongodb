@@ -201,7 +201,7 @@ module SensuPluginsMongoDB
       # Extra info
       extra_info = server_status['extra_info']
       server_metrics['mem.pageFaults'] = extra_info['page_faults']
-
+      server_metrics['mem.heap_size_bytes'] = extra_info['heap_size']
       # Global Lock
       global_lock = server_status['globalLock']
       server_metrics['lock.totalTime'] = global_lock['totalTime']
@@ -289,10 +289,11 @@ module SensuPluginsMongoDB
       server_metrics['mem.mappedWithJournal'] = mem['mappedWithJournal']
 
       # Malloc
-      malloc = server_status['tcmalloc']
-      server_metrics['mem.heap_size_bytes'] = malloc['generic']['heap_size']
-      server_metrics['mem.current_allocated_bytes'] = malloc['generic']['current_allocated_bytes']
-
+      if server_status.key?('wiredTiger')
+        malloc = server_status['tcmalloc']
+        server_metrics['mem.heap_size_bytes'] = malloc['generic']['heap_size']
+        server_metrics['mem.current_allocated_bytes'] = malloc['generic']['current_allocated_bytes']
+      end
      # WiredTiger specific Metrics
      if server_status.key?('wiredTiger')
             wiredTiger = server_status['wiredTiger']
@@ -453,18 +454,18 @@ module SensuPluginsMongoDB
             server_metrics['wiredTiger.lock.metadata_lock_acquisitions'] = lock['metadata lock acquisitions']
 
 
-            # # LSM Metrics
-            # LSM = wiredTiger['LSM']
-            # server_metrics['wiredTiger.LSM.sleep_for_LSM_merge_throttle'] = LSM['sleep for LSM merge throttle']
-            # server_metrics['wiredTiger.LSM.application_work_units_currently_queued'] = LSM['application work units currently queued']
-            # server_metrics['wiredTiger.LSM.rows_merged_in_an_LSM_tree'] = LSM['rows merged in an LSM tree']
-            # server_metrics['wiredTiger.LSM.switch_work_units_currently_queued'] = LSM['switch work units currently queued']
-            # server_metrics['wiredTiger.LSM.merge_work_units_currently_queued'] = LSM['merge work units currently queued']
-            # server_metrics['wiredTiger.LSM.tree_maintenance_operations_discarded'] = LSM['tree maintenance operations discarded']
-            # server_metrics['wiredTiger.LSM.sleep_for_LSM_checkpoint_throttle'] = LSM['sleep for LSM checkpoint throttle']
-            # server_metrics['wiredTiger.LSM.tree_maintenance_operations_executed'] = LSM['tree maintenance operations executed']
-            # server_metrics['wiredTiger.LSM.tree_maintenance_operations_scheduled'] = LSM['tree maintenance operations scheduled']
-            # server_metrics['wiredTiger.LSM.tree_queue_hit_maximum'] = LSM['tree queue hit maximum']
+            # LSM Metrics
+            LSM = wiredTiger['LSM']
+            server_metrics['wiredTiger.LSM.sleep_for_LSM_merge_throttle'] = LSM['sleep for LSM merge throttle']
+            server_metrics['wiredTiger.LSM.application_work_units_currently_queued'] = LSM['application work units currently queued']
+            server_metrics['wiredTiger.LSM.rows_merged_in_an_LSM_tree'] = LSM['rows merged in an LSM tree']
+            server_metrics['wiredTiger.LSM.switch_work_units_currently_queued'] = LSM['switch work units currently queued']
+            server_metrics['wiredTiger.LSM.merge_work_units_currently_queued'] = LSM['merge work units currently queued']
+            server_metrics['wiredTiger.LSM.tree_maintenance_operations_discarded'] = LSM['tree maintenance operations discarded']
+            server_metrics['wiredTiger.LSM.sleep_for_LSM_checkpoint_throttle'] = LSM['sleep for LSM checkpoint throttle']
+            server_metrics['wiredTiger.LSM.tree_maintenance_operations_executed'] = LSM['tree maintenance operations executed']
+            server_metrics['wiredTiger.LSM.tree_maintenance_operations_scheduled'] = LSM['tree maintenance operations scheduled']
+            server_metrics['wiredTiger.LSM.tree_queue_hit_maximum'] = LSM['tree queue hit maximum']
 
 
             # transaction Metrics
@@ -728,4 +729,3 @@ module SensuPluginsMongoDB
     end
   end
 end
-
