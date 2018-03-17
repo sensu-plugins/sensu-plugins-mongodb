@@ -5,6 +5,7 @@ This CHANGELOG follows the format located [here](https://github.com/sensu-plugin
 
 ## [Unreleased]
 
+## [2.0.2] - 2018-03-17
 ### Fixed
 - renamed library file `metics` to `metrics` and updated all refrences in code to it (@majormoses)
 
@@ -128,7 +129,8 @@ This CHANGELOG follows the format located [here](https://github.com/sensu-plugin
 ### Added
 - initial release
 
-[Unreleased]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/2.0.1...HEAD
+[Unreleased]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/2.0.2...HEAD
+[2.0.2]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/2.0.1...2.0.2
 [2.0.1]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/2.0.0...2.0.1
 [2.0.0]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.4.1...2.0.0
 [1.4.1]: https://github.com/sensu-plugins/sensu-plugins-mongodb/compare/1.4.0...1.4.1
