@@ -103,6 +103,13 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
          long: '--debug',
          default: false
 
+  option :connect,
+         description: 'The connection method to use',
+         long: `--connect`,
+         in: %i(direct replica_set sharded),
+         proc: proc(&:to_sym),
+         default: :direct
+
   def get_mongo_doc(command)
     rs = @db.command(command)
     unless rs.successful?

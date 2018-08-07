@@ -99,6 +99,13 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
          long: '--require-master',
          default: false
 
+  option :connect,
+         description: 'The connection method to use',
+         long: `--connect`,
+         in: %i(direct replica_set sharded),
+         proc: proc(&:to_sym),
+         default: :direct
+
   def run
     Mongo::Logger.logger.level = Logger::FATAL
     @debug = config[:debug]

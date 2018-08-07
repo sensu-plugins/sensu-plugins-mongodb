@@ -4,8 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 This CHANGELOG follows the format located [here](https://github.com/sensu-plugins/community/blob/master/HOW_WE_CHANGELOG.md)
 
 ## [Unreleased]
-### Fixed
-- Ensure Server status/Replicaset stats are current host's, not host from read preference (@naemon)
+### Breaking Changes
+- `--connect` now defaults to `:direct` so that Server status/Replicaset stats are current host's rather than all metrics in the replica set (@naemon)
+
+### Added
+- exposed `--connect` which controls how it connects. Valid values are `:direct`, `:replica_set` (mongo client default), and `:sharded`. (@naemon) (@majormoses)
 
 ## [2.0.2] - 2018-03-17
 ### Fixed

@@ -369,6 +369,7 @@ module SensuPluginsMongoDB
       ssl_key = @config[:ssl_key]
       ssl_ca_cert = @config[:ssl_ca_cert]
       ssl_verify = @config[:ssl_verify]
+      connect = @config[:connect]
 
       if Gem.loaded_specs['mongo'].version < Gem::Version.new('2.0.0')
         MongoClient.new(host, port)
@@ -376,7 +377,7 @@ module SensuPluginsMongoDB
         address_str = "#{host}:#{port}"
         client_opts = {}
         client_opts[:database] = db_name
-        client_opts[:connect] = :direct
+        client_opts[:connect] = connect
         unless db_user.nil?
           client_opts[:user] = db_user
           client_opts[:password] = db_password
