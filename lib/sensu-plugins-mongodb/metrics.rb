@@ -255,13 +255,15 @@ module SensuPluginsMongoDB
       server_metrics['network.numRequests'] = network['numRequests']
 
       # OpLatencies
-      oplatencies = server_status['opLatencies']
-      server_metrics['oplatencies.read.latency'] = oplatencies['reads']['latency']
-      server_metrics['oplatencies.read.operations'] = oplatencies['reads']['ops']
-      server_metrics['oplatencies.write.latency'] = oplatencies['writes']['latency']
-      server_metrics['oplatencies.write.operations'] = oplatencies['writes']['ops']
-      server_metrics['oplatencies.command.latency'] = oplatencies['commands']['latency']
-      server_metrics['oplatencies.command.operations'] = oplatencies['commands']['ops']
+      if server_status.key?('opLatencies')
+        oplatencies = server_status['opLatencies']
+        server_metrics['oplatencies.read.latency'] = oplatencies['reads']['latency']
+        server_metrics['oplatencies.read.operations'] = oplatencies['reads']['ops']
+        server_metrics['oplatencies.write.latency'] = oplatencies['writes']['latency']
+        server_metrics['oplatencies.write.operations'] = oplatencies['writes']['ops']
+        server_metrics['oplatencies.command.latency'] = oplatencies['commands']['latency']
+        server_metrics['oplatencies.command.operations'] = oplatencies['commands']['ops']
+      end
 
       # Opcounters
       opcounters = server_status['opcounters']
@@ -438,20 +440,22 @@ module SensuPluginsMongoDB
 
 
             # lock Metrics
-            lock = wiredTiger['lock']
-            server_metrics['wiredTiger.lock.schema_lock_application_thread_wait_time_(usecs)'] = lock['schema lock application thread wait time (usecs)']
-            server_metrics['wiredTiger.lock.table_lock_application_thread_time_waiting_for_the_table_lock_(usecs)'] = lock['table lock application thread time waiting for the table lock (usecs)']
-            server_metrics['wiredTiger.lock.checkpoint_lock_internal_thread_wait_time_(usecs)'] = lock['checkpoint lock internal thread wait time (usecs)']
-            server_metrics['wiredTiger.lock.schema_lock_acquisitions'] = lock['schema lock acquisitions']
-            server_metrics['wiredTiger.lock.handle-list_lock_eviction_thread_wait_time_(usecs)'] = lock['handle-list lock eviction thread wait time (usecs)']
-            server_metrics['wiredTiger.lock.checkpoint_lock_acquisitions'] = lock['checkpoint lock acquisitions']
-            server_metrics['wiredTiger.lock.table_lock_internal_thread_time_waiting_for_the_table_lock_(usecs)'] = lock['table lock internal thread time waiting for the table lock (usecs)']
-            server_metrics['wiredTiger.lock.checkpoint_lock_application_thread_wait_time_(usecs)'] = lock['checkpoint lock application thread wait time (usecs)']
-            server_metrics['wiredTiger.lock.table_lock_acquisitions'] = lock['table lock acquisitions']
-            server_metrics['wiredTiger.lock.metadata_lock_application_thread_wait_time_(usecs)'] = lock['metadata lock application thread wait time (usecs)']
-            server_metrics['wiredTiger.lock.schema_lock_internal_thread_wait_time_(usecs)'] = lock['schema lock internal thread wait time (usecs)']
-            server_metrics['wiredTiger.lock.metadata_lock_internal_thread_wait_time_(usecs)'] = lock['metadata lock internal thread wait time (usecs)']
-            server_metrics['wiredTiger.lock.metadata_lock_acquisitions'] = lock['metadata lock acquisitions']
+            if server_status.key?('lock')
+              lock = wiredTiger['lock']
+              server_metrics['wiredTiger.lock.schema_lock_application_thread_wait_time_(usecs)'] = lock['schema lock application thread wait time (usecs)']
+              server_metrics['wiredTiger.lock.table_lock_application_thread_time_waiting_for_the_table_lock_(usecs)'] = lock['table lock application thread time waiting for the table lock (usecs)']
+              server_metrics['wiredTiger.lock.checkpoint_lock_internal_thread_wait_time_(usecs)'] = lock['checkpoint lock internal thread wait time (usecs)']
+              server_metrics['wiredTiger.lock.schema_lock_acquisitions'] = lock['schema lock acquisitions']
+              server_metrics['wiredTiger.lock.handle-list_lock_eviction_thread_wait_time_(usecs)'] = lock['handle-list lock eviction thread wait time (usecs)']
+              server_metrics['wiredTiger.lock.checkpoint_lock_acquisitions'] = lock['checkpoint lock acquisitions']
+              server_metrics['wiredTiger.lock.table_lock_internal_thread_time_waiting_for_the_table_lock_(usecs)'] = lock['table lock internal thread time waiting for the table lock (usecs)']
+              server_metrics['wiredTiger.lock.checkpoint_lock_application_thread_wait_time_(usecs)'] = lock['checkpoint lock application thread wait time (usecs)']
+              server_metrics['wiredTiger.lock.table_lock_acquisitions'] = lock['table lock acquisitions']
+              server_metrics['wiredTiger.lock.metadata_lock_application_thread_wait_time_(usecs)'] = lock['metadata lock application thread wait time (usecs)']
+              server_metrics['wiredTiger.lock.schema_lock_internal_thread_wait_time_(usecs)'] = lock['schema lock internal thread wait time (usecs)']
+              server_metrics['wiredTiger.lock.metadata_lock_internal_thread_wait_time_(usecs)'] = lock['metadata lock internal thread wait time (usecs)']
+              server_metrics['wiredTiger.lock.metadata_lock_acquisitions'] = lock['metadata lock acquisitions']
+            end
 
 
             # LSM Metrics
