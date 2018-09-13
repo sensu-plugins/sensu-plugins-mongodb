@@ -455,17 +455,17 @@ module SensuPluginsMongoDB
 
 
             # LSM Metrics
-            LSM = wiredTiger['LSM']
-            server_metrics['wiredTiger.LSM.sleep_for_LSM_merge_throttle'] = LSM['sleep for LSM merge throttle']
-            server_metrics['wiredTiger.LSM.application_work_units_currently_queued'] = LSM['application work units currently queued']
-            server_metrics['wiredTiger.LSM.rows_merged_in_an_LSM_tree'] = LSM['rows merged in an LSM tree']
-            server_metrics['wiredTiger.LSM.switch_work_units_currently_queued'] = LSM['switch work units currently queued']
-            server_metrics['wiredTiger.LSM.merge_work_units_currently_queued'] = LSM['merge work units currently queued']
-            server_metrics['wiredTiger.LSM.tree_maintenance_operations_discarded'] = LSM['tree maintenance operations discarded']
-            server_metrics['wiredTiger.LSM.sleep_for_LSM_checkpoint_throttle'] = LSM['sleep for LSM checkpoint throttle']
-            server_metrics['wiredTiger.LSM.tree_maintenance_operations_executed'] = LSM['tree maintenance operations executed']
-            server_metrics['wiredTiger.LSM.tree_maintenance_operations_scheduled'] = LSM['tree maintenance operations scheduled']
-            server_metrics['wiredTiger.LSM.tree_queue_hit_maximum'] = LSM['tree queue hit maximum']
+            log_structured_merge = wiredTiger['LSM']
+            server_metrics['wiredTiger.LSM.sleep_for_LSM_merge_throttle'] = log_structured_merge['sleep for LSM merge throttle']
+            server_metrics['wiredTiger.LSM.application_work_units_currently_queued'] = log_structured_merge['application work units currently queued']
+            server_metrics['wiredTiger.LSM.rows_merged_in_an_LSM_tree'] = log_structured_merge['rows merged in an LSM tree']
+            server_metrics['wiredTiger.LSM.switch_work_units_currently_queued'] = log_structured_merge['switch work units currently queued']
+            server_metrics['wiredTiger.LSM.merge_work_units_currently_queued'] = log_structured_merge['merge work units currently queued']
+            server_metrics['wiredTiger.LSM.tree_maintenance_operations_discarded'] = log_structured_merge['tree maintenance operations discarded']
+            server_metrics['wiredTiger.LSM.sleep_for_LSM_checkpoint_throttle'] = log_structured_merge['sleep for LSM checkpoint throttle']
+            server_metrics['wiredTiger.LSM.tree_maintenance_operations_executed'] = log_structured_merge['tree maintenance operations executed']
+            server_metrics['wiredTiger.LSM.tree_maintenance_operations_scheduled'] = log_structured_merge['tree maintenance operations scheduled']
+            server_metrics['wiredTiger.LSM.tree_queue_hit_maximum'] = log_structured_merge['tree queue hit maximum']
 
 
             # transaction Metrics

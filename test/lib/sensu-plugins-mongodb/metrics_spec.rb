@@ -1,6 +1,6 @@
 require 'mongo'
 require_relative '../../spec_helper.rb'
-require_relative '../../../lib/sensu-plugins-mongodb/metics.rb'
+require_relative '../../../lib/sensu-plugins-mongodb/metrics.rb'
 
 include Mongo
 
