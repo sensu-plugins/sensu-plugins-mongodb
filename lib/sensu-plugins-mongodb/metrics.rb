@@ -102,6 +102,26 @@ module SensuPluginsMongoDB
       end
     end
 
+    def wiretiger_metrics(wiredtiger, server_metrics)
+      # wiredtiger = server_status['wiredTiger']
+      # data_handle Metrics
+      wiredtiger.each do |key1, value1|
+        next unless value1.is_a? Hash
+        wiredtiger[key1].each do |key2, value2|
+          if value2.is_a? Hash
+            wiredtiger[key1][key2].each do |key3, value3|
+              server_metrics['wiredTiger.' + key1.gsub(/(,|\s|-|\()+/, '_').tr(')', '') + '.' +
+                key2.gsub(/(,|\s|-|\()+/, '_').tr(')', '') + '.' + key3.gsub(/(,|\s|-|\()+/, '_').tr(')', '')] = value3
+            end
+          else
+            server_metrics['wiredTiger.' + key1.gsub(/(,|\s|-|\()+/, '_').tr(')', '') +
+              '.' + key2.gsub(/(,|\s|-|\()+/, '_').tr(')', '')] = value2
+          end
+        end
+      end
+      server_metrics
+    end
+
     # Fetches metrics for the server we are connected to.
     #
     # @return [Mash] the metrics for the server.
@@ -200,9 +220,8 @@ module SensuPluginsMongoDB
 
       # Extra info
       extra_info = server_status['extra_info']
-      server_metrics['mem.heap_usage_bytes'] = extra_info['heap_usage_bytes']
       server_metrics['mem.pageFaults'] = extra_info['page_faults']
-
+      server_metrics['mem.heap_size_bytes'] = extra_info['heap_size']
       # Global Lock
       global_lock = server_status['globalLock']
       server_metrics['lock.totalTime'] = global_lock['totalTime']
@@ -217,7 +236,6 @@ module SensuPluginsMongoDB
       if Gem::Version.new(mongo_version) < Gem::Version.new('3.0.0')
         index_counters = server_status['indexCounters']
         index_counters = server_status['indexCounters']['btree'] unless server_status['indexCounters']['btree'].nil?
-
         server_metrics['indexes.missRatio'] = sprintf('%.5f', index_counters['missRatio']).to_s
         server_metrics['indexes.hits'] = index_counters['hits']
         server_metrics['indexes.misses'] = index_counters['misses']
@@ -255,23 +273,28 @@ module SensuPluginsMongoDB
       server_metrics['network.bytesOut'] = network['bytesOut']
       server_metrics['network.numRequests'] = network['numRequests']
 
+      # OpLatencies
+      if server_status.key?('opLatencies')
+        oplatencies = server_status['opLatencies']
+        server_metrics['oplatencies.read.latency'] = oplatencies['reads']['latency']
+        server_metrics['oplatencies.read.operations'] = oplatencies['reads']['ops']
+        server_metrics['oplatencies.write.latency'] = oplatencies['writes']['latency']
+        server_metrics['oplatencies.write.operations'] = oplatencies['writes']['ops']
+        server_metrics['oplatencies.command.latency'] = oplatencies['commands']['latency']
+        server_metrics['oplatencies.command.operations'] = oplatencies['commands']['ops']
+      end
+
       # Opcounters
       opcounters = server_status['opcounters']
-      server_metrics['opcounters.insert'] = opcounters['insert']
-      server_metrics['opcounters.query'] = opcounters['query']
-      server_metrics['opcounters.update'] = opcounters['update']
-      server_metrics['opcounters.delete'] = opcounters['delete']
-      server_metrics['opcounters.getmore'] = opcounters['getmore']
-      server_metrics['opcounters.command'] = opcounters['command']
+      opcounters.each do |key, value|
+        server_metrics['opcounters.' + key] = value
+      end
 
       # Opcounters Replication
       opcounters_repl = server_status['opcountersRepl']
-      server_metrics['opcountersRepl.insert'] = opcounters_repl['insert']
-      server_metrics['opcountersRepl.query'] = opcounters_repl['query']
-      server_metrics['opcountersRepl.update'] = opcounters_repl['update']
-      server_metrics['opcountersRepl.delete'] = opcounters_repl['delete']
-      server_metrics['opcountersRepl.getmore'] = opcounters_repl['getmore']
-      server_metrics['opcountersRepl.command'] = opcounters_repl['command']
+      opcounters_repl.each do |key, value|
+        server_metrics['opcountersRepl.' + key] = value
+      end
 
       # Memory
       mem = server_status['mem']
@@ -279,6 +302,18 @@ module SensuPluginsMongoDB
       server_metrics['mem.virtualMb'] = mem['virtual']
       server_metrics['mem.mapped'] = mem['mapped']
       server_metrics['mem.mappedWithJournal'] = mem['mappedWithJournal']
+
+      # Malloc
+      if server_status.key?('wiredTiger')
+        malloc = server_status['tcmalloc']
+        server_metrics['mem.heap_size_bytes'] = malloc['generic']['heap_size']
+        server_metrics['mem.current_allocated_bytes'] = malloc['generic']['current_allocated_bytes']
+      end
+      # WiredTiger specific Metrics
+      if server_status.key?('wiredTiger')
+        wiredtiger = server_status['wiredTiger']
+        server_metrics = wiretiger_metrics(wiredtiger, server_metrics)
+      end
 
       # Metrics (documents)
       document = server_status['metrics']['document']

@@ -5,6 +5,10 @@ This CHANGELOG follows the format located [here](https://github.com/sensu-plugin
 
 ## [Unreleased]
 
+## [2.0.3] - 2018-09-14
+### New Feature
+- Adds WiredTiger Matrics (@parin921996)
+
 ## [2.0.2] - 2018-03-17
 ### Fixed
 - renamed library file `metics` to `metrics` and updated all refrences in code to it (@majormoses)
