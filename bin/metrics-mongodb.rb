@@ -98,7 +98,12 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
          description: 'Require the node to be a master node',
          long: '--require-master',
          default: false
-
+  
+  option :exclude_db_sizes,
+         description: 'Exclude database sizes',
+         long: '--exclude-db-sizes',
+         default: false
+  
   def run
     Mongo::Logger.logger.level = Logger::FATAL
     @debug = config[:debug]
@@ -114,7 +119,8 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
     collector.connect_mongo_db('admin')
     exit(1) if config[:require_master] && !collector.master?
     metrics = collector.server_metrics
-
+    metrics = metrics.select {|k,v| !k[/databaseSizes/]} if config[:exclude_db_sizes]
+    
     # Print them in graphite format.
     timestamp = Time.now.to_i
     metrics.each do |k, v|
