@@ -98,12 +98,12 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
          description: 'Require the node to be a master node',
          long: '--require-master',
          default: false
- 
+
   option :exclude_db_sizes,
          description: 'Exclude database sizes',
          long: '--exclude-db-sizes',
          default: false
- 
+
   def run
     Mongo::Logger.logger.level = Logger::FATAL
     @debug = config[:debug]
