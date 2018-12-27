@@ -119,7 +119,7 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
     collector.connect_mongo_db('admin')
     exit(1) if config[:require_master] && !collector.master?
     metrics = collector.server_metrics
-    metrics = metrics.select { |k,v| !k[/databaseSizes/] } if config[:exclude_db_sizes]
+    metrics = metrics.select { |k, _v| !k[/databaseSizes/] } if config[:exclude_db_sizes]
 
     # Print them in graphite format.
     timestamp = Time.now.to_i
