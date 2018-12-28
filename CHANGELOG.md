@@ -5,6 +5,9 @@ This CHANGELOG follows the format located [here](https://github.com/sensu-plugin
 
 ## [Unreleased]
 
+### Added
+- `bin/metrics-mongodb.rb`: added `--exclude-db-sizes` option that removes database sizes which can be quite large from the payload sent to message broker (rabbitmq) which often need special tuning for (@mdzidic)
+
 ## [2.0.2] - 2018-03-17
 ### Fixed
 - renamed library file `metics` to `metrics` and updated all refrences in code to it (@majormoses)
