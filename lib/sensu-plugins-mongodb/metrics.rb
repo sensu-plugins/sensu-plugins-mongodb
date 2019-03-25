@@ -102,23 +102,36 @@ module SensuPluginsMongoDB
       end
     end
 
-    def wiretiger_metrics(wiredtiger, server_metrics)
-      # wiredtiger = server_status['wiredTiger']
-      # data_handle Metrics
-      wiredtiger.each do |key1, value1|
-        next unless value1.is_a? Hash
-        wiredtiger[key1].each do |key2, value2|
-          if value2.is_a? Hash
-            wiredtiger[key1][key2].each do |key3, value3|
-              server_metrics['wiredTiger.' + key1.gsub(/(,|\s|-|\()+/, '_').tr(')', '') + '.' +
-                key2.gsub(/(,|\s|-|\()+/, '_').tr(')', '') + '.' + key3.gsub(/(,|\s|-|\()+/, '_').tr(')', '')] = value3
-            end
-          else
-            server_metrics['wiredTiger.' + key1.gsub(/(,|\s|-|\()+/, '_').tr(')', '') +
-              '.' + key2.gsub(/(,|\s|-|\()+/, '_').tr(')', '')] = value2
-          end
+    def foo(key,json)
+      json.each do |key1, value1|
+        if value1.is_a? Hash
+          Temp_hash = {}
+          Temp_hash = foo(key1,value1)
+          return_json.merge(Temp_hash)
+        else
+          return key.gsub(/(,|\s|-|\()+/, '_').tr(')', '') + key1.gsub(/(,|\s|-|\()+/, '_').tr(')', '') => value1
         end
-      end
+    end
+
+    
+    def wiretiger_metrics(wiredtiger, server_metrics)
+      TEMP_VALUE = foo('wiretiger',wiredtiger)
+      puts TEMP_VALUE
+      server_metrics.merge()
+      # wiredtiger.each do |key1, value1|
+      #   next unless value1.is_a? Hash
+      #   wiredtiger[key1].each do |key2, value2|
+      #     if value2.is_a? Hash
+      #       wiredtiger[key1][key2].each do |key3, value3|
+      #         server_metrics['wiredTiger.' + key1.gsub(/(,|\s|-|\()+/, '_').tr(')', '') + '.' +
+      #           key2.gsub(/(,|\s|-|\()+/, '_').tr(')', '') + '.' + key3.gsub(/(,|\s|-|\()+/, '_').tr(')', '')] = value3
+      #       end
+      #     else
+      #       server_metrics['wiredTiger.' + key1.gsub(/(,|\s|-|\()+/, '_').tr(')', '') +
+      #         '.' + key2.gsub(/(,|\s|-|\()+/, '_').tr(')', '')] = value2
+      #     end
+      #   end
+      # end
       server_metrics
     end
 
