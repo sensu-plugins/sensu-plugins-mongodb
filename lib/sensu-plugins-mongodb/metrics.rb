@@ -318,11 +318,13 @@ module SensuPluginsMongoDB
       server_metrics['metrics.repl.network.getmores_totalMillis'] = repl['network']['getmores']['totalMillis']
       server_metrics['metrics.repl.network.ops'] = repl['network']['ops']
       server_metrics['metrics.repl.network.readersCreated'] = repl['network']['readersCreated']
-      server_metrics['metrics.repl.preload.docs_num'] = repl['preload']['docs']['num']
-      server_metrics['metrics.repl.preload.docs_totalMillis'] = repl['preload']['docs']['totalMillis']
-      server_metrics['metrics.repl.preload.indexes_num'] = repl['preload']['indexes']['num']
-      server_metrics['metrics.repl.preload.indexes_totalMillis'] = repl['preload']['indexes']['totalMillis']
-
+      if repl.key?('preload')
+        server_metrics['metrics.repl.preload.docs_num'] = repl['preload']['docs']['num']
+        server_metrics['metrics.repl.preload.docs_totalMillis'] = repl['preload']['docs']['totalMillis']
+        server_metrics['metrics.repl.preload.indexes_num'] = repl['preload']['indexes']['num']
+        server_metrics['metrics.repl.preload.indexes_totalMillis'] = repl['preload']['indexes']['totalMillis']
+      end
+      
       # Metrics (replicaset status)
       # MongoDB will fail if not running with --replSet, hence the check for nil
       unless replicaset_status.nil?
@@ -331,10 +333,12 @@ module SensuPluginsMongoDB
 
       # Metrics (storage)
       if Gem::Version.new(mongo_version) >= Gem::Version.new('2.6.0')
-        freelist = server_status['metrics']['storage']['freelist']
-        server_metrics['metrics.storage.freelist.search_bucketExhauseted'] = freelist['search']['bucketExhausted']
-        server_metrics['metrics.storage.freelist.search_requests'] = freelist['search']['requests']
-        server_metrics['metrics.storage.freelist.search_scanned'] = freelist['search']['scanned']
+        if server_status.key?('metrics.storage')
+          freelist = server_status['metrics']['storage']['freelist']
+          server_metrics['metrics.storage.freelist.search_bucketExhauseted'] = freelist['search']['bucketExhausted']
+          server_metrics['metrics.storage.freelist.search_requests'] = freelist['search']['requests']
+          server_metrics['metrics.storage.freelist.search_scanned'] = freelist['search']['scanned']
+        end
       end
 
       # Metrics (ttl)
