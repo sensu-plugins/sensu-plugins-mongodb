@@ -1,6 +1,6 @@
 
 MethodLength:
-  Max: 200
+  Enabled: false
 
 LineLength:
   Max: 160
