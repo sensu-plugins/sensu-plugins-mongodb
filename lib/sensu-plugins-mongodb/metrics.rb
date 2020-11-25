@@ -359,7 +359,9 @@ module SensuPluginsMongoDB
         server_metrics['metrics.wired_tiger.cache.eviction_server_evicting_pages'] = wired_tiger_cache['eviction server evicting pages']
         server_metrics['metrics.wired_tiger.cache.maximum_bytes_configured'] = wired_tiger_cache['maximum bytes configured']
         server_metrics['metrics.wired_tiger.cache.modified_pages_evicted'] = wired_tiger_cache['modified pages evicted']
+        server_metrics['metrics.wired_tiger.cache.pages_currently_held_in_the_cache'] = wired_tiger_cache['pages currently held in the cache']
         server_metrics['metrics.wired_tiger.cache.tracked_dirty_bytes_in_the_cache'] = wired_tiger_cache['tracked dirty bytes in the cache']
+        server_metrics['metrics.wired_tiger.cache.tracked_dirty_pages_in_the_cache'] = wired_tiger_cache['tracked dirty pages in the cache']
         server_metrics['metrics.wired_tiger.cache.unmodified_pages_evicted'] = wired_tiger_cache['unmodified pages evicted']
 
         # concurrentTransactions
