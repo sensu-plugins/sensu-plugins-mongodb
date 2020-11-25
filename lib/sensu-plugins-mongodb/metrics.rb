@@ -377,6 +377,11 @@ module SensuPluginsMongoDB
 
         # transaction
         wired_tiger_tx = server_status['wiredTiger']['transaction']
+        server_metrics['metrics.wired_tiger.transaction.transaction_checkpoint_max_time_msecs'] = wired_tiger_tx['transaction checkpoint max time (msecs)']
+        server_metrics['metrics.wired_tiger.transaction.transaction_checkpoint_min_time_msecs'] = wired_tiger_tx['transaction checkpoint min time (msecs)']
+        server_metrics['metrics.wired_tiger.transaction.transaction_checkpoint_most_recent_time_msecs'] = wired_tiger_tx[
+          'transaction checkpoint most recent time (msecs)'
+        ]
         server_metrics['metrics.wired_tiger.transaction.transactions_committed'] = wired_tiger_tx['transactions committed']
         server_metrics['metrics.wired_tiger.transaction.transactions_rolled_back'] = wired_tiger_tx['transactions rolled back']
       end
