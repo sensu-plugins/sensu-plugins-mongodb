@@ -105,6 +105,11 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
          in: %i(direct replica_set sharded),
          proc: proc(&:to_sym),
          default: :direct
+  
+  option :exclude_db_sizes,
+         description: 'Exclude database sizes',
+         long: '--exclude-db-sizes',
+         default: false
 
   def run
     Mongo::Logger.logger.level = Logger::FATAL
@@ -121,6 +126,7 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
     collector.connect_mongo_db('admin')
     exit(1) if config[:require_master] && !collector.master?
     metrics = collector.server_metrics
+    metrics = metrics.reject { |k, _v| k[/databaseSizes/] } if config[:exclude_db_sizes]
 
     # Print them in graphite format.
     timestamp = Time.now.to_i
