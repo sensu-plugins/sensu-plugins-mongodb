@@ -301,3 +301,70 @@ describe 'SensuPluginsMongoDB::Metrics' do
     end
   end
 end
+
+describe 'integration tests', :integration do
+  @container = nil
+  before(:all) do
+    require 'docker'
+    Docker::Image.create('fromImage' => 'flqw/docker-mongo-local-replicaset:latest')
+    @container = Docker::Container.create(
+      'Image' => 'flqw/docker-mongo-local-replicaset',
+      'ExposedPorts' => {
+        '27001/tcp' => {},
+        '27002/tcp' => {},
+        '27003/tcp' => {},
+      },
+      'HostConfig' => {
+        'PortBindings' => {
+          '27001/tcp' => [{ 'HostPort' => '27001' }],
+          '27002/tcp' => [{ 'HostPort' => '27002' }],
+          '27003/tcp' => [{ 'HostPort' => '27003' }],
+        }
+      }
+    )
+    @container.start
+    sleep(15)
+  end
+
+  it 'get metrics from primary in direct mode' do
+    @config = {
+      host: 'localhost',
+      port: 27001,
+      connect: :direct,
+      debug: true
+    }
+    metrics = SensuPluginsMongoDB::Metrics.new(@config)
+    metrics.connect_mongo_db('admin')
+    result = metrics.server_metrics
+    expect(result['metrics.replicaset.state']).to eq 1
+  end
+
+  it 'get metrics from secondary in direct mode' do
+    @config = {
+      host: 'localhost',
+      port: 27002,
+      connect: :direct,
+      debug: true
+    }
+    metrics = SensuPluginsMongoDB::Metrics.new(@config)
+    metrics.connect_mongo_db('admin')
+    result = metrics.server_metrics
+    expect(result['metrics.replicaset.state']).to eq 2
+  end
+
+  it 'get metrics from secondary without :connect options redirects to primary' do
+    @config = {
+      host: 'localhost',
+      port: 27002,
+      debug: true
+    }
+    metrics = SensuPluginsMongoDB::Metrics.new(@config)
+    metrics.connect_mongo_db('admin')
+    result = metrics.server_metrics
+    expect(result['metrics.replicaset.state']).to eq 1
+  end
+
+  after(:all) do
+    @container.delete(:force => true)
+  end
+end

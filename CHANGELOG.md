@@ -5,10 +5,10 @@ This CHANGELOG follows the format located [here](https://github.com/sensu-plugin
 
 ## [Unreleased]
 ### Breaking Changes
-- `--connect` now defaults to `:direct` so that Server status/Replicaset stats are current host's rather than all metrics in the replica set (@naemon)
+- `--connect` now defaults to `:direct` so that Server status/Replicaset stats are current host's rather than all metrics in the replica set (@naemono)
 
 ### Added
-- exposed `--connect` which controls how it connects. Valid values are `:direct`, `:replica_set` (mongo client default), and `:sharded`. (@naemon) (@majormoses)
+- exposed `--connect` which controls how it connects. Valid values are `:direct`, `:replica_set` (mongo client default), and `:sharded`. (@naemono) (@majormoses)
 
 ## [2.1.0] - 2018-12-27
 ### Added

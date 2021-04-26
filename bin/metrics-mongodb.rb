@@ -101,10 +101,10 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
 
   option :connect,
          description: 'The connection method to use',
-         long: `--connect`,
-         in: %i(direct replica_set sharded),
+         long: '--connect METHOD',
+         in: %i(direct replica_set sharded none),
          proc: proc(&:to_sym),
-         default: :direct
+         default: :none
   
   option :exclude_db_sizes,
          description: 'Exclude database sizes',
