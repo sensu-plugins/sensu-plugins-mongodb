@@ -99,6 +99,13 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
          long: '--require-master',
          default: false
 
+  option :connect,
+         description: 'The connection method to use',
+         long: '--connect METHOD',
+         in: %i(direct replica_set sharded none),
+         proc: proc(&:to_sym),
+         default: :none
+  
   option :exclude_db_sizes,
          description: 'Exclude database sizes',
          long: '--exclude-db-sizes',

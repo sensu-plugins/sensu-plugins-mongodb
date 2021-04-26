@@ -3,6 +3,9 @@ cache:
 - bundler
 install:
 - bundle install
+# If integration tests are accepted, we'd require this to run them
+# services:
+#   - docker
 rvm:
 - 2.1
 - 2.2
