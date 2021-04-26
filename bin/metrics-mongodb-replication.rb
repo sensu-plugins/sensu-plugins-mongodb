@@ -109,7 +109,6 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
          in: %i(direct replica_set sharded none),
          proc: proc(&:to_sym),
          default: :none
-         default: :direct
 
   def get_mongo_doc(command)
     rs = @db.command(command)
