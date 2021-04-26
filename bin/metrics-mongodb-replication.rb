@@ -106,8 +106,9 @@ class MongoDB < Sensu::Plugin::Metric::CLI::Graphite
   option :connect,
          description: 'The connection method to use',
          long: '--connect METHOD',
-         in: %i(direct replica_set sharded),
+         in: %i(direct replica_set sharded none),
          proc: proc(&:to_sym),
+         default: :none
          default: :direct
 
   def get_mongo_doc(command)
