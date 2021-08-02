@@ -16,14 +16,14 @@ Gem::Specification.new do |s|
   s.email                  = '<sensu-users@googlegroups.com>'
   s.executables            = Dir.glob('bin/**/*.rb').map { |file| File.basename(file) }
   s.files                  = Dir.glob('{bin,lib}/**/*') + %w(LICENSE README.md CHANGELOG.md)
-  s.homepage               = 'https://github.com/sensu-plugins/sensu-plugins-mongodb'
+  s.homepage               = 'https://github.com/campact/sensu-plugins-mongodb/'
   s.license                = 'MIT'
   s.metadata               = { 'maintainer'         => 'sensu-plugin',
                                'development_status' => 'active',
                                'production_status'  => 'unstable - testing recommended',
                                'release_draft'      => 'false',
                                'release_prerelease' => 'false' }
-  s.name                   = 'sensu-plugins-mongodb'
+  s.name                   = 'sensu-plugins-mongodb-wt'
   s.platform               = Gem::Platform::RUBY
   s.post_install_message   = 'You can use the embedded Ruby by setting EMBEDDED_RUBY=true in /etc/default/sensu'
   s.require_paths          = ['lib']
@@ -34,9 +34,9 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'bson',              '~> 4.0'
   s.add_runtime_dependency 'mongo',             '2.4.1'
-  s.add_runtime_dependency 'sensu-plugin',      '~> 2.0'
+  s.add_runtime_dependency 'sensu-plugin',      '~> 4.0'
 
-  s.add_development_dependency 'bundler',                   '~> 1.7'
+  s.add_development_dependency 'bundler'
   s.add_development_dependency 'codeclimate-test-reporter', '~> 0.4'
   s.add_development_dependency 'github-markup',             '~> 1.3'
   s.add_development_dependency 'pry',                       '~> 0.10'
