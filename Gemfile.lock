@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sensu-plugins-mongodb-wt (2.2.0)
+    sensu-plugins-mongodb-wt (2.2.1)
       bson (~> 4.0)
       mongo (= 2.4.1)
       sensu-plugin (~> 4.0)
