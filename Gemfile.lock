@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     sensu-plugins-mongodb-wt (2.2.1)
-      bson (~> 4.0)
+      bson (~> 4.12.1)
       mongo (= 2.4.1)
       sensu-plugin (~> 4.0)
 
@@ -80,4 +80,4 @@ DEPENDENCIES
   yard (~> 0.8)
 
 BUNDLED WITH
-   2.2.23
+   2.2.24
