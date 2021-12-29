@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sensu-plugins-mongodb-wt (2.2.1)
+    sensu-plugins-mongodb-wt (2.2.2)
       bson (~> 4.12.1)
       mongo (= 2.4.1)
       sensu-plugin (~> 4.0)
@@ -17,7 +17,7 @@ GEM
     diff-lcs (1.4.4)
     docile (1.4.0)
     github-markup (1.7.0)
-    json (2.5.1)
+    json (2.6.1)
     method_source (1.0.0)
     mixlib-cli (1.7.0)
     mongo (2.4.1)
