@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 #
 # A MongoDB Nagios check script
@@ -16,37 +16,50 @@
 #   - @jbraeuer on github
 #   - Dag Stockstad <dag.stockstad@gmail.com>
 #   - @Andor on github
-#   - Steven Richards - Captainkrtek on Github <sbrichards@mit.edu>
+#   - Steven Richards - Captainkrtek on github
+#   - Max Vernimmen - @mvernimmen-CG / @mvernimmen on github
+#   - Kris Nova - @kris@nivenly.com github.com/kris-nova
+#   - Jan Kantert - firstname@lastname.net
 #
-
-# License: BSD
+# LICENCE
+#
 # Copyright (c) 2012, Mike Zupan <mike@zcentric.com>
 # All rights reserved.
-# Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 #
-# Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-# Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
-# documentation and/or other materials provided with the distribution.
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-# THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS
-# BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
-# GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
 #
-# README: https://github.com/mzupan/nagios-plugin-mongodb/blob/master/LICENSE
+# Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+#
+# Redistributions in binary form must reproduce the above copyright notice, this
+# list of conditions and the following disclaimer in the documentation and/or
+# other materials provided with the distribution. #THIS SOFTWARE IS PROVIDED BY
+# THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+# WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+# EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+# OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
 
-# #RED
+from __future__ import print_function
+from __future__ import division
 import sys
 import time
 import optparse
-import textwrap
 import re
 import os
+import numbers
 
 try:
     import pymongo
-except ImportError, e:
-    print e
+except ImportError as e:
+    print(e)
     sys.exit(2)
 
 # As of pymongo v 1.9 the SON API is part of the BSON package, therefore attempt
@@ -90,37 +103,35 @@ def performance_data(perf_data, params):
 
 
 def numeric_type(param):
-    if ((type(param) == float or type(param) == int or type(param) == long or param == None)):
-        return True
-    return False
+    return param is None or isinstance(param, numbers.Real)
 
 
 def check_levels(param, warning, critical, message, ok=[]):
     if (numeric_type(critical) and numeric_type(warning)):
         if param >= critical:
-            print "CRITICAL - " + message
+            print("CRITICAL - " + message)
             sys.exit(2)
         elif param >= warning:
-            print "WARNING - " + message
+            print("WARNING - " + message)
             sys.exit(1)
         else:
-            print "OK - " + message
+            print("OK - " + message)
             sys.exit(0)
     else:
         if param in critical:
-            print "CRITICAL - " + message
+            print("CRITICAL - " + message)
             sys.exit(2)
 
         if param in warning:
-            print "WARNING - " + message
+            print("WARNING - " + message)
             sys.exit(1)
 
         if param in ok:
-            print "OK - " + message
+            print("OK - " + message)
             sys.exit(0)
 
         # unexpected param value
-        print "CRITICAL - Unexpected value : %d" % param + "; " + message
+        print("CRITICAL - Unexpected value : %d" % param + "; " + message)
         return 2
 
 
@@ -137,35 +148,47 @@ def main(argv):
     p = optparse.OptionParser(conflict_handler="resolve", description="This Nagios plugin checks the health of mongodb.")
 
     p.add_option('-H', '--host', action='store', type='string', dest='host', default='127.0.0.1', help='The hostname you want to connect to')
-    p.add_option('-P', '--port', action='store', type='int', dest='port', default=27017, help='The port mongodb is runnung on')
+    p.add_option('-h', '--host-to-check', action='store', type='string', dest='host_to_check', default=None, help='The hostname you want to check (if this is different from the host you are connecting)')
+    p.add_option('-P', '--port', action='store', type='int', dest='port', default=27017, help='The port mongodb is running on')
+    p.add_option('--port-to-check', action='store', type='int', dest='port_to_check', default=None, help='The port you want to check (if this is different from the port you are connecting)')
     p.add_option('-u', '--user', action='store', type='string', dest='user', default=None, help='The username you want to login as')
     p.add_option('-p', '--pass', action='store', type='string', dest='passwd', default=None, help='The password you want to use for that user')
-    p.add_option('-W', '--warning', action='store', dest='warning', default=None, help='The warning threshold we want to set')
-    p.add_option('-C', '--critical', action='store', dest='critical', default=None, help='The critical threshold we want to set')
+    p.add_option('-W', '--warning', action='store', dest='warning', default=None, help='The warning threshold you want to set')
+    p.add_option('-C', '--critical', action='store', dest='critical', default=None, help='The critical threshold you want to set')
     p.add_option('-A', '--action', action='store', type='choice', dest='action', default='connect', help='The action you want to take',
                  choices=['connect', 'connections', 'replication_lag', 'replication_lag_percent', 'replset_state', 'memory', 'memory_mapped', 'lock',
-                          'flushing', 'last_flush_time', 'index_miss_ratio', 'databases', 'collections', 'database_size', 'database_indexes', 'collection_indexes', 'collection_size',
-                          'queues', 'oplog', 'journal_commits_in_wl', 'write_data_files', 'journaled', 'opcounters', 'current_lock', 'replica_primary', 'page_faults',
-                          'asserts', 'queries_per_second', 'page_faults', 'chunks_balance', 'connect_primary', 'collection_state', 'row_count', 'replset_quorum'])
+                          'flushing', 'last_flush_time', 'index_miss_ratio', 'databases', 'collections', 'database_size', 'database_indexes', 'collection_documents', 'collection_indexes', 'collection_size',
+                          'collection_storageSize', 'queues', 'oplog', 'journal_commits_in_wl', 'write_data_files', 'journaled', 'opcounters', 'current_lock', 'replica_primary',
+                          'page_faults', 'asserts', 'queries_per_second', 'page_faults', 'chunks_balance', 'connect_primary', 'collection_state', 'row_count', 'replset_quorum'])
     p.add_option('--max-lag', action='store_true', dest='max_lag', default=False, help='Get max replication lag (for replication_lag action only)')
     p.add_option('--mapped-memory', action='store_true', dest='mapped_memory', default=False, help='Get mapped memory instead of resident (if resident memory can not be read)')
     p.add_option('-D', '--perf-data', action='store_true', dest='perf_data', default=False, help='Enable output of Nagios performance data')
     p.add_option('-d', '--database', action='store', dest='database', default='admin', help='Specify the database to check')
     p.add_option('--all-databases', action='store_true', dest='all_databases', default=False, help='Check all databases (action database_size)')
-    p.add_option('-s', '--ssl-enabled', dest='ssl_enabled', default=False, action='callback', callback=optional_arg(True), help='Connect using SSL')
-    p.add_option('-e', '--ssl-certfile', dest='ssl_certfile', default=None, action='store', help='The certificate file used to identify the local connection against mongod')
-    p.add_option('-k', '--ssl-keyfile', dest='ssl_keyfile', default=None, action='store', help='The private key used to identify the local connection against mongod')
-    p.add_option('-a', '--ssl-ca-certs', dest='ssl_ca_certs', default=None, action='store', help='The set of concatenated CA certificates, which are used to validate certificates passed from the other end of the connection')
+    p.add_option('-s', '--ssl', dest='ssl', default=False, action='callback', callback=optional_arg(True), help='Connect using SSL')
     p.add_option('-r', '--replicaset', dest='replicaset', default=None, action='callback', callback=optional_arg(True), help='Connect to replicaset')
     p.add_option('-q', '--querytype', action='store', dest='query_type', default='query', help='The query type to check [query|insert|update|delete|getmore|command] from queries_per_second')
     p.add_option('-c', '--collection', action='store', dest='collection', default='admin', help='Specify the collection to check')
     p.add_option('-T', '--time', action='store', type='int', dest='sample_time', default=1, help='Time used to sample number of pages faults')
+    p.add_option('-M', '--mongoversion', action='store', type='choice', dest='mongo_version', default='2', help='The MongoDB version you are talking with, either 2 or 3',
+      choices=['2','3'])
+    p.add_option('-a', '--authdb', action='store', type='string', dest='authdb', default='admin', help='The database you want to authenticate against')
+    p.add_option('--insecure', action='store_true', dest='insecure', default=False, help="Don't verify SSL/TLS certificates")
+    p.add_option('--ssl-ca-cert-file', action='store', type='string', dest='ssl_ca_cert_file', default=None, help='Path to Certificate Authority file for SSL')
+    p.add_option('-f', '--ssl-cert-file', action='store', type='string', dest='cert_file', default=None, help='Path to PEM encoded key and cert for client authentication')
+    p.add_option('-m','--auth-mechanism', action='store', type='choice', dest='auth_mechanism', default=None, help='Auth mechanism used for auth with mongodb',
+    choices=['MONGODB-X509','SCRAM-SHA-256','SCRAM-SHA-1'])
+    p.add_option('--disable_retry_writes', dest='retry_writes_disabled', default=False, action='callback', callback=optional_arg(True), help='Disable retryWrites feature')    
 
     options, arguments = p.parse_args()
     host = options.host
+    host_to_check = options.host_to_check if options.host_to_check else options.host
     port = options.port
+    port_to_check = options.port_to_check if options.port_to_check else options.port
     user = options.user
     passwd = options.passwd
+    authdb = options.authdb
+
     query_type = options.query_type
     collection = options.collection
     sample_time = options.sample_time
@@ -179,12 +202,15 @@ def main(argv):
     action = options.action
     perf_data = options.perf_data
     max_lag = options.max_lag
+    mongo_version = options.mongo_version
     database = options.database
-    ssl_enabled = options.ssl_enabled
-    ssl_certfile = options.ssl_certfile
-    ssl_keyfile = options.ssl_keyfile
-    ssl_ca_certs = options.ssl_ca_certs
+    ssl = options.ssl
     replicaset = options.replicaset
+    insecure = options.insecure
+    ssl_ca_cert_file = options.ssl_ca_cert_file
+    cert_file = options.cert_file
+    auth_mechanism = options.auth_mechanism
+    retry_writes_disabled = options.retry_writes_disabled    
 
     if action == 'replica_primary' and replicaset is None:
         return "replicaset must be passed in when using replica_primary check"
@@ -195,31 +221,36 @@ def main(argv):
     # moving the login up here and passing in the connection
     #
     start = time.time()
-    err, con = mongo_connect(host, port, ssl_enabled, ssl_certfile, ssl_keyfile, ssl_ca_certs, user, passwd, replicaset)
+    err, con = mongo_connect(host, port, ssl, user, passwd, replicaset, authdb, insecure, ssl_ca_cert_file, cert_file, retry_writes_disabled=retry_writes_disabled)
+
+    if err != 0:
+        return err
+
+    # Autodetect mongo-version and force pymongo to let us know if it can connect or not.
+    err, mongo_version = check_version(con)
     if err != 0:
         return err
 
     conn_time = time.time() - start
-    conn_time = round(conn_time, 0)
 
     if action == "connections":
         return check_connections(con, warning, critical, perf_data)
     elif action == "replication_lag":
-        return check_rep_lag(con, host, port, warning, critical, False, perf_data, max_lag, user, passwd)
+        return check_rep_lag(con, host_to_check, port_to_check, warning, critical, False, perf_data, max_lag, user, passwd)
     elif action == "replication_lag_percent":
-        return check_rep_lag(con, host, port, warning, critical, True, perf_data, max_lag, user, passwd)
+        return check_rep_lag(con, host_to_check, port_to_check, warning, critical, True, perf_data, max_lag, user, passwd, ssl, insecure, ssl_ca_cert_file, cert_file)
     elif action == "replset_state":
         return check_replset_state(con, perf_data, warning, critical)
     elif action == "memory":
-        return check_memory(con, warning, critical, perf_data, options.mapped_memory)
+        return check_memory(con, warning, critical, perf_data, options.mapped_memory, host)
     elif action == "memory_mapped":
         return check_memory_mapped(con, warning, critical, perf_data)
     elif action == "queues":
         return check_queues(con, warning, critical, perf_data)
     elif action == "lock":
-        return check_lock(con, warning, critical, perf_data)
+        return check_lock(con, warning, critical, perf_data, mongo_version)
     elif action == "current_lock":
-        return check_current_lock(con, host, warning, critical, perf_data)
+        return check_current_lock(con, host, port, warning, critical, perf_data)
     elif action == "flushing":
         return check_flushing(con, warning, critical, True, perf_data)
     elif action == "last_flush_time":
@@ -241,22 +272,26 @@ def main(argv):
             return check_database_size(con, database, warning, critical, perf_data)
     elif action == "database_indexes":
         return check_database_indexes(con, database, warning, critical, perf_data)
+    elif action == "collection_documents":
+        return check_collection_documents(con, database, collection, warning, critical, perf_data)
     elif action == "collection_indexes":
         return check_collection_indexes(con, database, collection, warning, critical, perf_data)
     elif action == "collection_size":
         return check_collection_size(con, database, collection, warning, critical, perf_data)
+    elif action == "collection_storageSize":
+        return check_collection_storageSize(con, database, collection, warning, critical, perf_data)
     elif action == "journaled":
         return check_journaled(con, warning, critical, perf_data)
     elif action == "write_data_files":
         return check_write_to_datafiles(con, warning, critical, perf_data)
     elif action == "opcounters":
-        return check_opcounters(con, host, warning, critical, perf_data)
+        return check_opcounters(con, host, port, warning, critical, perf_data)
     elif action == "asserts":
-        return check_asserts(con, host, warning, critical, perf_data)
+        return check_asserts(con, host, port, warning, critical, perf_data)
     elif action == "replica_primary":
-        return check_replica_primary(con, host, warning, critical, perf_data, replicaset)
+        return check_replica_primary(con, host, warning, critical, perf_data, replicaset, mongo_version)
     elif action == "queries_per_second":
-        return check_queries_per_second(con, query_type, warning, critical, perf_data)
+        return check_queries_per_second(con, query_type, warning, critical, perf_data, mongo_version)
     elif action == "page_faults":
         check_page_faults(con, sample_time, warning, critical, perf_data)
     elif action == "chunks_balance":
@@ -273,42 +308,73 @@ def main(argv):
         return check_connect(host, port, warning, critical, perf_data, user, passwd, conn_time)
 
 
-def mongo_connect(host=None, port=None, ssl_enabled=False, ssl_certfile=None, ssl_keyfile=None, ssl_ca_certs=None, user=None, passwd=None, replica=None):
+def mongo_connect(host=None, port=None, ssl=False, user=None, passwd=None, replica=None, authdb="admin", insecure=False, ssl_ca_cert_file=None, ssl_cert=None, auth_mechanism=None, retry_writes_disabled=False):
+    from pymongo.errors import ConnectionFailure
+    from pymongo.errors import PyMongoError
+    import ssl as SSL
+
+    con_args = dict()
+
+    if ssl:
+        if insecure:
+            con_args['ssl_cert_reqs'] = SSL.CERT_NONE
+        else:
+            con_args['ssl_cert_reqs'] = SSL.CERT_REQUIRED
+        con_args['ssl'] = ssl
+        if ssl_ca_cert_file:
+            con_args['ssl_ca_certs'] = ssl_ca_cert_file
+        if ssl_cert:
+            con_args['ssl_certfile'] = ssl_cert
+
+    if retry_writes_disabled:
+        con_args['retryWrites'] = False
+
     try:
         # ssl connection for pymongo > 2.3
         if pymongo.version >= "2.3":
             if replica is None:
-                if ssl_enabled:
-                    con = pymongo.MongoClient(host, port, ssl=ssl_enabled, ssl_certfile=ssl_certfile, ssl_keyfile=ssl_keyfile, ssl_ca_certs=ssl_ca_certs)
-                else:
-                    con = pymongo.MongoClient(host, port)
+                con = pymongo.MongoClient(host, port, **con_args)
             else:
-                if ssl_enabled:
-                    con = pymongo.Connection(host, port, read_preference=pymongo.ReadPreference.SECONDARY, ssl=ssl_enabled, ssl_certfile=ssl_certfile, ssl_keyfile=ssl_keyfile, ssl_ca_certs=ssl_ca_certs, replicaSet=replica, network_timeout=10)
-                else:
-                    con = pymongo.Connection(host, port, read_preference=pymongo.ReadPreference.SECONDARY, replicaSet=replica, network_timeout=10)
-            try:
-                # https://api.mongodb.com/python/current/api/pymongo/mongo_client.html
-                # The ismaster command is cheap and does not require auth.
-                con.admin.command('ismaster', connectTimeoutMS=10000)
-            except Exception, e:
-                return exit_with_general_critical(e), None
+                con = pymongo.MongoClient(host, port, read_preference=pymongo.ReadPreference.SECONDARY, replicaSet=replica, **con_args)
         else:
             if replica is None:
                 con = pymongo.Connection(host, port, slave_okay=True, network_timeout=10)
             else:
                 con = pymongo.Connection(host, port, slave_okay=True, network_timeout=10)
-                #con = pymongo.Connection(host, port, slave_okay=True, replicaSet=replica, network_timeout=10)
+
+        # we must authenticate the connection, otherwise we won't be able to perform certain operations
+        if ssl_cert and ssl_ca_cert_file and user and auth_mechanism == 'SCRAM-SHA-256':
+            con.the_database.authenticate(user, mechanism='SCRAM-SHA-256')
+        elif ssl_cert and ssl_ca_cert_file and user and auth_mechanism == 'SCRAM-SHA-1':
+            con.the_database.authenticate(user, mechanism='SCRAM-SHA-1')
+        elif ssl_cert and ssl_ca_cert_file and user and auth_mechanism == 'MONGODB-X509':
+            con.the_database.authenticate(user, mechanism='MONGODB-X509')
+
+        try:
+          result = con.admin.command("ismaster")
+        except ConnectionFailure:
+          print("CRITICAL - Connection to Mongo server on %s:%s has failed" % (host, port) )
+          sys.exit(2)
+
+        if 'arbiterOnly' in result and result['arbiterOnly'] == True:
+            print("OK - State: 7 (Arbiter on port %s)" % (port))
+            sys.exit(0)
 
         if user and passwd:
-            db = con["admin"]
-            if not db.authenticate(user, passwd):
+            db = con[authdb]
+            try:
+              db.authenticate(user, password=passwd)
+            except PyMongoError:
                 sys.exit("Username/Password incorrect")
-    except Exception, e:
+
+        # Ping to check that the server is responding.
+        con.admin.command("ping")
+
+    except Exception as e:
         if isinstance(e, pymongo.errors.AutoReconnect) and str(e).find(" is an arbiter") != -1:
             # We got a pymongo AutoReconnect exception that tells us we connected to an Arbiter Server
             # This means: Arbiter is reachable and can answer requests/votes - this is all we need to know from an arbiter
-            print "OK - State: 7 (Arbiter)"
+            print("OK - State: 7 (Arbiter)")
             sys.exit(0)
         return exit_with_general_critical(e), None
     return 0, con
@@ -318,7 +384,7 @@ def exit_with_general_warning(e):
     if isinstance(e, SystemExit):
         return e
     else:
-        print "WARNING - General MongoDB warning:", e
+        print("WARNING - General MongoDB warning:", e)
     return 1
 
 
@@ -326,21 +392,27 @@ def exit_with_general_critical(e):
     if isinstance(e, SystemExit):
         return e
     else:
-        print "CRITICAL - General MongoDB Error:", e
+        print("CRITICAL - General MongoDB Error:", e)
     return 2
 
 
 def set_read_preference(db):
-    if pymongo.version >= "2.2" and pymongo.version < "2.8":
+    if pymongo.version >= "2.2":
         pymongo.read_preferences.Secondary
     else:
         db.read_preference = pymongo.ReadPreference.SECONDARY
 
+def check_version(con):
+    try:
+        server_info = con.server_info()
+    except Exception as e:
+        return exit_with_general_critical(e), None
+    return 0, int(server_info['version'].split('.')[0].strip())
 
 def check_connect(host, port, warning, critical, perf_data, user, passwd, conn_time):
     warning = warning or 3
     critical = critical or 6
-    message = "Connection took %i seconds" % conn_time
+    message = "Connection took %.3f seconds" % conn_time
     message += performance_data(perf_data, [(conn_time, "connection_time", warning, critical)])
 
     return check_levels(conn_time, warning, critical, message)
@@ -362,13 +434,17 @@ def check_connections(con, warning, critical, perf_data):
                 (available, "available_connections")])
         return check_levels(used_percent, warning, critical, message)
 
-    except Exception, e:
+    except Exception as e:
         return exit_with_general_critical(e)
 
 
-def check_rep_lag(con, host, port, warning, critical, percent, perf_data, max_lag, user, passwd):
+def check_rep_lag(con, host, port, warning, critical, percent, perf_data, max_lag, user, passwd, ssl=None, insecure=None, ssl_ca_cert_file=None, cert_file=None):
     # Get mongo to tell us replica set member name when connecting locally
     if "127.0.0.1" == host:
+        if not "me" in list(con.admin.command("ismaster","1").keys()):
+            print("UNKNOWN - This is not replicated MongoDB")
+            return 3
+
         host = con.admin.command("ismaster","1")["me"].split(':')[0]
 
     if percent:
@@ -380,15 +456,15 @@ def check_rep_lag(con, host, port, warning, critical, percent, perf_data, max_la
     rs_status = {}
     slaveDelays = {}
     try:
-        set_read_preference(con.admin)
+        #set_read_preference(con.admin)
 
         # Get replica set status
         try:
             rs_status = con.admin.command("replSetGetStatus")
-        except pymongo.errors.OperationFailure, e:
-            if e.code == None and str(e).find('failed: not running with --replSet"'):
-                print "OK - Not running with replSet"
-                return 0
+        except pymongo.errors.OperationFailure as e:
+            if ((e.code == None and str(e).find('failed: not running with --replSet"')) or (e.code == 76 and str(e).find('not running with --replSet"'))):
+                print("UNKNOWN - Not running with replSet")
+                return 3
 
         serverVersion = tuple(con.server_info()['version'].split('.'))
         if serverVersion >= tuple("2.0.0".split(".")):
@@ -409,24 +485,24 @@ def check_rep_lag(con, host, port, warning, critical, percent, perf_data, max_la
             for member in rs_status["members"]:
                 if member["stateStr"] == "PRIMARY":
                     primary_node = member
-                if member["name"].split(':')[0] == host and int(member["name"].split(':')[1]) == port:
+                if member.get('name') == "{0}:{1}".format(host, port):
                     host_node = member
 
             # Check if we're in the middle of an election and don't have a primary
             if primary_node is None:
-                print "WARNING - No primary defined. In an election?"
+                print("WARNING - No primary defined. In an election?")
                 return 1
 
             # Check if we failed to find the current host
             # below should never happen
             if host_node is None:
-                print "CRITICAL - Unable to find host '" + host + "' in replica set."
+                print("CRITICAL - Unable to find host '" + host + "' in replica set.")
                 return 2
 
             # Is the specified host the primary?
             if host_node["stateStr"] == "PRIMARY":
                 if max_lag == False:
-                    print "OK - This is the primary."
+                    print("OK - This is the primary.")
                     return 0
                 else:
                     #get the maximal replication lag
@@ -439,7 +515,7 @@ def check_rep_lag(con, host, port, warning, critical, percent, perf_data, max_la
                             data = data + member['name'] + " lag=%d;" % replicationLag
                             maximal_lag = max(maximal_lag, replicationLag)
                     if percent:
-                        err, con = mongo_connect(primary_node['name'].split(':')[0], int(primary_node['name'].split(':')[1]), False, user=user, passwd=passwd)
+                        err, con = mongo_connect(primary_node['name'].split(':')[0], int(primary_node['name'].split(':')[1]), False, user, passwd)
                         if err != 0:
                             return err
                         primary_timediff = replication_get_time_diff(con)
@@ -451,8 +527,8 @@ def check_rep_lag(con, host, port, warning, critical, percent, perf_data, max_la
                         message += performance_data(perf_data, [(maximal_lag, "replication_lag", warning, critical)])
                     return check_levels(maximal_lag, warning, critical, message)
             elif host_node["stateStr"] == "ARBITER":
-                print "OK - This is an arbiter"
-                return 0
+                print("UNKNOWN - This is an arbiter")
+                return 3
 
             # Find the difference in optime between current node and PRIMARY
 
@@ -471,7 +547,7 @@ def check_rep_lag(con, host, port, warning, critical, percent, perf_data, max_la
                 lag = float(optime_lag.seconds + optime_lag.days * 24 * 3600)
 
             if percent:
-                err, con = mongo_connect(primary_node['name'].split(':')[0], int(primary_node['name'].split(':')[1]), False, user=user, passwd=passwd)
+                err, con = mongo_connect(primary_node['name'].split(':')[0], int(primary_node['name'].split(':')[1]), ssl, user, passwd, None, None, insecure, ssl_ca_cert_file, cert_file)
                 if err != 0:
                     return err
                 primary_timediff = replication_get_time_diff(con)
@@ -503,12 +579,12 @@ def check_rep_lag(con, host, port, warning, critical, percent, perf_data, max_la
 
             # Check if we're in the middle of an election and don't have a primary
             if primary_node is None:
-                print "WARNING - No primary defined. In an election?"
+                print("WARNING - No primary defined. In an election?")
                 sys.exit(1)
 
             # Is the specified host the primary?
             if host_node["stateStr"] == "PRIMARY":
-                print "OK - This is the primary."
+                print("OK - This is the primary.")
                 sys.exit(0)
 
             # Find the difference in optime between current node and PRIMARY
@@ -527,20 +603,42 @@ def check_rep_lag(con, host, port, warning, critical, percent, perf_data, max_la
                 message += performance_data(perf_data, [(lag, "replication_lag", warning, critical)])
             return check_levels(lag, warning, critical, message)
 
-    except Exception, e:
+    except Exception as e:
         return exit_with_general_critical(e)
 
+#
+# Check the memory usage of mongo. Alerting on this may be hard to get right
+# because it'll try to get as much memory as it can. And that's probably
+# a good thing.
+#
+def check_memory(con, warning, critical, perf_data, mapped_memory, host):
+    # Get the total system memory of this system (This is totally bogus if you
+    # are running this command remotely) and calculate based on that how much
+    # memory used by Mongodb is ok or not.
+    meminfo = open('/proc/meminfo').read()
+    matched = re.search(r'^MemTotal:\s+(\d+)', meminfo)
+    if matched:
+        mem_total_kB = int(matched.groups()[0])
 
-def check_memory(con, warning, critical, perf_data, mapped_memory):
-    #
-    # These thresholds are basically meaningless, and must be customized to your system's ram
-    #
-    warning = warning or 8
-    critical = critical or 16
+    if host != "127.0.0.1" and not warning:
+      # Running remotely and value was not set by user, use hardcoded value
+      warning = 12
+    else:
+      # running locally or user provided value
+      warning = warning or (mem_total_kB * 0.8) / 1024.0 / 1024.0
+
+    if host != "127.0.0.1" and not critical:
+      critical = 16
+    else:
+      critical = critical or (mem_total_kB * 0.9) / 1024.0 / 1024.0
+
+    # debugging
+    #print "mem total: {0}kb, warn: {1}GB, crit: {2}GB".format(mem_total_kB,warning, critical)
+
     try:
         data = get_server_status(con)
         if not data['mem']['supported'] and not mapped_memory:
-            print "OK - Platform not supported for memory info"
+            print("OK - Platform not supported for memory info")
             return 0
         #
         # convert to gigs
@@ -577,7 +675,7 @@ def check_memory(con, warning, critical, perf_data, mapped_memory):
         else:
             return check_levels(mem_resident, warning, critical, message)
 
-    except Exception, e:
+    except Exception as e:
         return exit_with_general_critical(e)
 
 
@@ -590,7 +688,7 @@ def check_memory_mapped(con, warning, critical, perf_data):
     try:
         data = get_server_status(con)
         if not data['mem']['supported']:
-            print "OK - Platform not supported for memory info"
+            print("OK - Platform not supported for memory info")
             return 0
         #
         # convert to gigs
@@ -607,33 +705,45 @@ def check_memory_mapped(con, warning, critical, perf_data):
             message += " %.2fGB mappedWithJournal" % mem_mapped_journal
         except:
             mem_mapped_journal = 0
-        message += performance_data(perf_data, [("%.2f" % mem_mapped, "memory_mapped"), ("%.2f" % mem_mapped_journal, "mappedWithJournal")])
+        message += performance_data(perf_data, [("%.2f" % mem_mapped, "memory_mapped", warning, critical), ("%.2f" % mem_mapped_journal, "mappedWithJournal")])
 
         if not mem_mapped == -1:
             return check_levels(mem_mapped, warning, critical, message)
         else:
-            print "OK - Server does not provide mem.mapped info"
+            print("OK - Server does not provide mem.mapped info")
             return 0
 
-    except Exception, e:
+    except Exception as e:
         return exit_with_general_critical(e)
 
 
-def check_lock(con, warning, critical, perf_data):
+#
+# Return the percentage of the time there was a global Lock
+#
+def check_lock(con, warning, critical, perf_data, mongo_version):
     warning = warning or 10
     critical = critical or 30
-    try:
-        data = get_server_status(con)
-        #
-        # calculate percentage
-        #
-        lock_percentage = float(data['globalLock']['lockTime']) / float(data['globalLock']['totalTime']) * 100
-        message = "Lock Percentage: %.2f%%" % lock_percentage
-        message += performance_data(perf_data, [("%.2f" % lock_percentage, "lock_percentage", warning, critical)])
-        return check_levels(lock_percentage, warning, critical, message)
-
-    except Exception, e:
-        return exit_with_general_critical(e)
+    if mongo_version == 2:
+        try:
+            data = get_server_status(con)
+            lockTime = data['globalLock']['lockTime']
+            totalTime = data['globalLock']['totalTime']
+            #
+            # calculate percentage
+            #
+            if lockTime > totalTime:
+                lock_percentage = 0.00
+            else:
+                lock_percentage = float(lockTime) / float(totalTime) * 100
+            message = "Lock Percentage: %.2f%%" % lock_percentage
+            message += performance_data(perf_data, [("%.2f" % lock_percentage, "lock_percentage", warning, critical)])
+            return check_levels(lock_percentage, warning, critical, message)
+        except Exception as e:
+            print("Couldn't get globalLock lockTime info from mongo, are you sure you're not using version 3? See the -M option.")
+            return exit_with_general_critical(e)
+    else:
+        print("OK - MongoDB version 3 doesn't report on global locks")
+        return 0
 
 
 def check_flushing(con, warning, critical, avg, perf_data):
@@ -645,19 +755,24 @@ def check_flushing(con, warning, critical, avg, perf_data):
     critical = critical or 15000
     try:
         data = get_server_status(con)
-        if avg:
-            flush_time = float(data['backgroundFlushing']['average_ms'])
-            stat_type = "Average"
-        else:
-            flush_time = float(data['backgroundFlushing']['last_ms'])
-            stat_type = "Last"
+        try:
+            data['backgroundFlushing']
+            if avg:
+                flush_time = float(data['backgroundFlushing']['average_ms'])
+                stat_type = "Average"
+            else:
+                flush_time = float(data['backgroundFlushing']['last_ms'])
+                stat_type = "Last"
 
-        message = "%s Flush Time: %.2fms" % (stat_type, flush_time)
-        message += performance_data(perf_data, [("%.2fms" % flush_time, "%s_flush_time" % stat_type.lower(), warning, critical)])
+            message = "%s Flush Time: %.2fms" % (stat_type, flush_time)
+            message += performance_data(perf_data, [("%.2fms" % flush_time, "%s_flush_time" % stat_type.lower(), warning, critical)])
 
-        return check_levels(flush_time, warning, critical, message)
+            return check_levels(flush_time, warning, critical, message)
+        except Exception:
+            print("OK - flushing stats not available for this storage engine")
+            return 0
 
-    except Exception, e:
+    except Exception as e:
         return exit_with_general_critical(e)
 
 
@@ -668,6 +783,7 @@ def index_miss_ratio(con, warning, critical, perf_data):
         data = get_server_status(con)
 
         try:
+            data['indexCounters']
             serverVersion = tuple(con.server_info()['version'].split('.'))
             if serverVersion >= tuple("2.4.0".split(".")):
                 miss_ratio = float(data['indexCounters']['missRatio'])
@@ -675,19 +791,24 @@ def index_miss_ratio(con, warning, critical, perf_data):
                 miss_ratio = float(data['indexCounters']['btree']['missRatio'])
         except KeyError:
             not_supported_msg = "not supported on this platform"
-            if data['indexCounters'].has_key('note'):
-                print "OK - MongoDB says: " + not_supported_msg
+            try:
+                data['indexCounters']
+                if 'note' in data['indexCounters']:
+                    print("OK - MongoDB says: " + not_supported_msg)
+                    return 0
+                else:
+                    print("WARNING - Can't get counter from MongoDB")
+                    return 1
+            except Exception:
+                print("OK - MongoDB says: " + not_supported_msg)
                 return 0
-            else:
-                print "WARNING - Can't get counter from MongoDB"
-                return 1
 
         message = "Miss Ratio: %.2f" % miss_ratio
         message += performance_data(perf_data, [("%.2f" % miss_ratio, "index_miss_ratio", warning, critical)])
 
         return check_levels(miss_ratio, warning, critical, message)
 
-    except Exception, e:
+    except Exception as e:
         return exit_with_general_critical(e)
 
 def check_replset_quorum(con, perf_data):
@@ -711,7 +832,7 @@ def check_replset_quorum(con, perf_data):
             message = "Cluster is not quorate and cannot operate"
 
         return check_levels(state, warning, critical, message)
-    except Exception, e:
+    except Exception as e:
         return exit_with_general_critical(e)
 
 
@@ -720,51 +841,68 @@ def check_replset_state(con, perf_data, warning="", critical=""):
     try:
         warning = [int(x) for x in warning.split(",")]
     except:
-        warning = [0, 3, 5, 9]
+        warning = [0, 3, 5]
     try:
         critical = [int(x) for x in critical.split(",")]
     except:
         critical = [8, 4, -1]
 
-    ok = range(-1, 8)  # should include the range of all posiible values
+    ok = list(range(-1, 8))  # should include the range of all posiible values
     try:
+        worst_state = -2
+        message = ""
         try:
             try:
                 set_read_preference(con.admin)
                 data = con.admin.command(pymongo.son_manipulator.SON([('replSetGetStatus', 1)]))
             except:
                 data = con.admin.command(son.SON([('replSetGetStatus', 1)]))
-            state = int(data['myState'])
-        except pymongo.errors.OperationFailure, e:
-            if e.code == None and str(e).find('failed: not running with --replSet"'):
-                state = -1
+            members = data['members']
+            my_state = int(data['myState'])
+            worst_state = my_state
+            for member in members:
+                their_state = int(member['state'])
+                message += " %s: %i (%s)" % (member['name'], their_state, state_text(their_state))
+                if state_is_worse(their_state, worst_state, warning, critical):
+                    worst_state = their_state
+            message += performance_data(perf_data, [(my_state, "state")])
 
-        if state == 8:
-            message = "State: %i (Down)" % state
-        elif state == 4:
-            message = "State: %i (Fatal error)" % state
-        elif state == 0:
-            message = "State: %i (Starting up, phase1)" % state
-        elif state == 3:
-            message = "State: %i (Recovering)" % state
-        elif state == 5:
-            message = "State: %i (Starting up, phase2)" % state
-        elif state == 1:
-            message = "State: %i (Primary)" % state
-        elif state == 2:
-            message = "State: %i (Secondary)" % state
-        elif state == 7:
-            message = "State: %i (Arbiter)" % state
-        elif state == 9:
-            message = "State: %i (Rollback)" % state
-        elif state == -1:
-            message = "Not running with replSet"
-        else:
-            message = "State: %i (Unknown state)" % state
-        message += performance_data(perf_data, [(state, "state")])
-        return check_levels(state, warning, critical, message, ok)
-    except Exception, e:
+        except pymongo.errors.OperationFailure as e:
+            if ((e.code == None and str(e).find('failed: not running with --replSet"')) or (e.code == 76 and str(e).find('not running with --replSet"'))):
+                worst_state = -1
+
+        return check_levels(worst_state, warning, critical, message, ok)
+    except Exception as e:
         return exit_with_general_critical(e)
+
+def state_is_worse(state, worst_state, warning, critical):
+    if worst_state in critical:
+        return False
+    if worst_state in warning:
+        return state in critical
+    return (state in warning) or (state in critical)
+
+def state_text(state):
+    if state == 8:
+        return "Down"
+    elif state == 4:
+        return "Fatal error"
+    elif state == 0:
+        return "Starting up, phase1"
+    elif state == 3:
+        return "Recovering"
+    elif state == 5:
+        return "Starting up, phase2"
+    elif state == 1:
+        return  "Primary"
+    elif state == 2:
+        return  "Secondary"
+    elif state == 7:
+        return  "Arbiter"
+    elif state == -1:
+        return  "Not running with replSet"
+    else:
+        return  "Unknown state"
 
 
 def check_databases(con, warning, critical, perf_data=None):
@@ -779,7 +917,7 @@ def check_databases(con, warning, critical, perf_data=None):
         message = "Number of DBs: %.0f" % count
         message += performance_data(perf_data, [(count, "databases", warning, critical, message)])
         return check_levels(count, warning, critical, message)
-    except Exception, e:
+    except Exception as e:
         return exit_with_general_critical(e)
 
 
@@ -801,7 +939,7 @@ def check_collections(con, warning, critical, perf_data=None):
         message += performance_data(perf_data, [(count, "collections", warning, critical, message)])
         return check_levels(count, warning, critical, message)
 
-    except Exception, e:
+    except Exception as e:
         return exit_with_general_critical(e)
 
 
@@ -838,21 +976,21 @@ def check_database_size(con, database, warning, critical, perf_data):
     try:
         set_read_preference(con.admin)
         data = con[database].command('dbstats')
-        storage_size = data['storageSize'] / 1024 / 1024
+        storage_size = data['storageSize'] // 1024 // 1024
         if perf_data:
             perfdata += " | database_size=%i;%i;%i" % (storage_size, warning, critical)
             #perfdata += " database=%s" %(database)
 
         if storage_size >= critical:
-            print "CRITICAL - Database size: %.0f MB, Database: %s%s" % (storage_size, database, perfdata)
+            print("CRITICAL - Database size: %.0f MB, Database: %s%s" % (storage_size, database, perfdata))
             return 2
         elif storage_size >= warning:
-            print "WARNING - Database size: %.0f MB, Database: %s%s" % (storage_size, database, perfdata)
+            print("WARNING - Database size: %.0f MB, Database: %s%s" % (storage_size, database, perfdata))
             return 1
         else:
-            print "OK - Database size: %.0f MB, Database: %s%s" % (storage_size, database, perfdata)
+            print("OK - Database size: %.0f MB, Database: %s%s" % (storage_size, database, perfdata))
             return 0
-    except Exception, e:
+    except Exception as e:
         return exit_with_general_critical(e)
 
 
@@ -866,20 +1004,42 @@ def check_database_indexes(con, database, warning, critical, perf_data):
     try:
         set_read_preference(con.admin)
         data = con[database].command('dbstats')
-        index_size = data['indexSize'] / 1024 / 1024
+        index_size = data['indexSize'] / 1024 // 1024
         if perf_data:
             perfdata += " | database_indexes=%i;%i;%i" % (index_size, warning, critical)
 
         if index_size >= critical:
-            print "CRITICAL - %s indexSize: %.0f MB %s" % (database, index_size, perfdata)
+            print("CRITICAL - %s indexSize: %.0f MB %s" % (database, index_size, perfdata))
             return 2
         elif index_size >= warning:
-            print "WARNING - %s indexSize: %.0f MB %s" % (database, index_size, perfdata)
+            print("WARNING - %s indexSize: %.0f MB %s" % (database, index_size, perfdata))
             return 1
         else:
-            print "OK - %s indexSize: %.0f MB %s" % (database, index_size, perfdata)
+            print("OK - %s indexSize: %.0f MB %s" % (database, index_size, perfdata))
             return 0
-    except Exception, e:
+    except Exception as e:
+        return exit_with_general_critical(e)
+
+
+def check_collection_documents(con, database, collection, warning, critical, perf_data):
+    perfdata = ""
+    try:
+        set_read_preference(con.admin)
+        data = con[database].command('collstats', collection)
+        documents = data['count']
+        if perf_data:
+            perfdata += " | collection_documents=%i;%i;%i" % (documents, warning, critical)
+
+        if documents >= critical:
+            print("CRITICAL - %s.%s documents: %s %s" % (database, collection, documents, perfdata))
+            return 2
+        elif documents >= warning:
+            print("WARNING - %s.%s documents: %s %s" % (database, collection, documents, perfdata))
+            return 1
+        else:
+            print("OK - %s.%s documents: %s %s" % (database, collection, documents, perfdata))
+            return 0
+    except Exception as e:
         return exit_with_general_critical(e)
 
 
@@ -898,15 +1058,15 @@ def check_collection_indexes(con, database, collection, warning, critical, perf_
             perfdata += " | collection_indexes=%i;%i;%i" % (total_index_size, warning, critical)
 
         if total_index_size >= critical:
-            print "CRITICAL - %s.%s totalIndexSize: %.0f MB %s" % (database, collection, total_index_size, perfdata)
+            print("CRITICAL - %s.%s totalIndexSize: %.0f MB %s" % (database, collection, total_index_size, perfdata))
             return 2
         elif total_index_size >= warning:
-            print "WARNING - %s.%s totalIndexSize: %.0f MB %s" % (database, collection, total_index_size, perfdata)
+            print("WARNING - %s.%s totalIndexSize: %.0f MB %s" % (database, collection, total_index_size, perfdata))
             return 1
         else:
-            print "OK - %s.%s totalIndexSize: %.0f MB %s" % (database, collection, total_index_size, perfdata)
+            print("OK - %s.%s totalIndexSize: %.0f MB %s" % (database, collection, total_index_size, perfdata))
             return 0
-    except Exception, e:
+    except Exception as e:
         return exit_with_general_critical(e)
 
 
@@ -923,7 +1083,7 @@ def check_queues(con, warning, critical, perf_data):
         message += performance_data(perf_data, [(total_queues, "total_queues", warning, critical), (readers_queues, "readers_queues"), (writers_queues, "writers_queues")])
         return check_levels(total_queues, warning, critical, message)
 
-    except Exception, e:
+    except Exception as e:
         return exit_with_general_critical(e)
 
 def check_collection_size(con, database, collection, warning, critical, perf_data):
@@ -938,18 +1098,43 @@ def check_collection_size(con, database, collection, warning, critical, perf_dat
             perfdata += " | collection_size=%i;%i;%i" % (size, warning, critical)
 
         if size >= critical:
-            print "CRITICAL - %s.%s size: %.0f MB %s" % (database, collection, size, perfdata)
+            print("CRITICAL - %s.%s size: %.0f MB %s" % (database, collection, size, perfdata))
             return 2
         elif size >= warning:
-            print "WARNING - %s.%s size: %.0f MB %s" % (database, collection, size, perfdata)
+            print("WARNING - %s.%s size: %.0f MB %s" % (database, collection, size, perfdata))
             return 1
         else:
-            print "OK - %s.%s size: %.0f MB %s" % (database, collection, size, perfdata)
+            print("OK - %s.%s size: %.0f MB %s" % (database, collection, size, perfdata))
             return 0
-    except Exception, e:
+    except Exception as e:
         return exit_with_general_critical(e)
 
-def check_queries_per_second(con, query_type, warning, critical, perf_data):
+
+def check_collection_storageSize(con, database, collection, warning, critical, perf_data):
+    warning = warning or 100
+    critical = critical or 1000
+    perfdata = ""
+    try:
+        set_read_preference(con.admin)
+        data = con[database].command('collstats', collection)
+        storageSize = data['storageSize'] / 1024 / 1024
+        if perf_data:
+            perfdata += " | collection_storageSize=%i;%i;%i" % (storageSize, warning, critical)
+
+        if storageSize >= critical:
+            print("CRITICAL - %s.%s storageSize: %.0f MB %s" % (database, collection, storageSize, perfdata))
+            return 2
+        elif storageSize >= warning:
+            print("WARNING - %s.%s storageSize: %.0f MB %s" % (database, collection, storageSize, perfdata))
+            return 1
+        else:
+            print("OK - %s.%s storageSize: %.0f MB %s" % (database, collection, storageSize, perfdata))
+            return 0
+    except Exception as e:
+        return exit_with_general_critical(e)
+
+
+def check_queries_per_second(con, query_type, warning, critical, perf_data, mongo_version):
     warning = warning or 250
     critical = critical or 500
 
@@ -970,10 +1155,17 @@ def check_queries_per_second(con, query_type, warning, critical, perf_data):
             diff_query = num - last_count['data'][query_type]['count']
             diff_ts = ts - last_count['data'][query_type]['ts']
 
+            if diff_ts == 0:
+                message = "diff_query = " + str(diff_query) + " diff_ts = " + str(diff_ts)
+                return check_levels(0, warning, critical, message)
+
             query_per_sec = float(diff_query) / float(diff_ts)
 
             # update the count now
-            db.nagios_check.update({u'_id': last_count['_id']}, {'$set': {"data.%s" % query_type: {'count': num, 'ts': int(time.time())}}})
+            if mongo_version == 2:
+                db.nagios_check.update({u'_id': last_count['_id']}, {'$set': {"data.%s" % query_type: {'count': num, 'ts': int(time.time())}}})
+            else:
+                db.nagios_check.update_one({u'_id': last_count['_id']}, {'$set': {"data.%s" % query_type: {'count': num, 'ts': int(time.time())}}})
 
             message = "Queries / Sec: %f" % query_per_sec
             message += performance_data(perf_data, [(query_per_sec, "%s_per_sec" % query_type, warning, critical, message)])
@@ -982,17 +1174,24 @@ def check_queries_per_second(con, query_type, warning, critical, perf_data):
             # since it is the first run insert it
             query_per_sec = 0
             message = "First run of check.. no data"
-            db.nagios_check.update({u'_id': last_count['_id']}, {'$set': {"data.%s" % query_type: {'count': num, 'ts': int(time.time())}}})
+            if mongo_version == 2:
+                db.nagios_check.update({u'_id': last_count['_id']}, {'$set': {"data.%s" % query_type: {'count': num, 'ts': int(time.time())}}})
+            else:
+                db.nagios_check.update_one({u'_id': last_count['_id']}, {'$set': {"data.%s" % query_type: {'count': num, 'ts': int(time.time())}}})
+
         except TypeError:
             #
             # since it is the first run insert it
             query_per_sec = 0
             message = "First run of check.. no data"
-            db.nagios_check.insert({'check': 'query_counts', 'data': {query_type: {'count': num, 'ts': int(time.time())}}})
+            if mongo_version == 2:
+                db.nagios_check.insert({'check': 'query_counts', 'data': {query_type: {'count': num, 'ts': int(time.time())}}})
+            else:
+                db.nagios_check.insert_one({'check': 'query_counts', 'data': {query_type: {'count': num, 'ts': int(time.time())}}})
 
         return check_levels(query_per_sec, warning, critical, message)
 
-    except Exception, e:
+    except Exception as e:
         return exit_with_general_critical(e)
 
 
@@ -1039,7 +1238,7 @@ def check_oplog(con, warning, critical, perf_data):
         message += performance_data(perf_data, [("%.2f" % hours_in_oplog, 'oplog_time', warning, critical), ("%.2f " % approx_level, 'oplog_time_100_percent_used')])
         return check_levels(-approx_level, -warning, -critical, message)
 
-    except Exception, e:
+    except Exception as e:
         return exit_with_general_critical(e)
 
 
@@ -1057,7 +1256,7 @@ Under very high write situations it is normal for this value to be nonzero.  """
         message += performance_data(perf_data, [(j_commits_in_wl, "j_commits_in_wl", warning, critical)])
         return check_levels(j_commits_in_wl, warning, critical, message)
 
-    except Exception, e:
+    except Exception as e:
         return exit_with_general_critical(e)
 
 
@@ -1073,7 +1272,7 @@ def check_journaled(con, warning, critical, perf_data):
         message += performance_data(perf_data, [("%.2f" % journaled, "journaled", warning, critical)])
         return check_levels(journaled, warning, critical, message)
 
-    except Exception, e:
+    except Exception as e:
         return exit_with_general_critical(e)
 
 
@@ -1090,11 +1289,11 @@ than the amount physically written to disk."""
         message += performance_data(perf_data, [("%.2f" % writes, "write_to_data_files", warning, critical)])
         return check_levels(writes, warning, critical, message)
 
-    except Exception, e:
+    except Exception as e:
         return exit_with_general_critical(e)
 
 
-def get_opcounters(data, opcounters_name, host):
+def get_opcounters(data, opcounters_name, host, port):
     try:
         insert = data[opcounters_name]['insert']
         query = data[opcounters_name]['query']
@@ -1102,21 +1301,21 @@ def get_opcounters(data, opcounters_name, host):
         delete = data[opcounters_name]['delete']
         getmore = data[opcounters_name]['getmore']
         command = data[opcounters_name]['command']
-    except KeyError, e:
+    except KeyError as e:
         return 0, [0] * 100
     total_commands = insert + query + update + delete + getmore + command
     new_vals = [total_commands, insert, query, update, delete, getmore, command]
-    return  maintain_delta(new_vals, host, opcounters_name)
+    return  maintain_delta(new_vals, host, port, opcounters_name)
 
 
-def check_opcounters(con, host, warning, critical, perf_data):
+def check_opcounters(con, host, port, warning, critical, perf_data):
     """ A function to get all opcounters delta per minute. In case of a replication - gets the opcounters+opcountersRepl"""
     warning = warning or 10000
     critical = critical or 15000
 
     data = get_server_status(con)
-    err1, delta_opcounters = get_opcounters(data, 'opcounters', host)
-    err2, delta_opcounters_repl = get_opcounters(data, 'opcountersRepl', host)
+    err1, delta_opcounters = get_opcounters(data, 'opcounters', host, port)
+    err2, delta_opcounters_repl = get_opcounters(data, 'opcountersRepl', host, port)
     if err1 == 0 and err2 == 0:
         delta = [(x + y) for x, y in zip(delta_opcounters, delta_opcounters_repl)]
         delta[0] = delta_opcounters[0]  # only the time delta shouldn't be summarized
@@ -1124,14 +1323,14 @@ def check_opcounters(con, host, warning, critical, perf_data):
         message = "Test succeeded , old values missing"
         message = "Opcounters: total=%d,insert=%d,query=%d,update=%d,delete=%d,getmore=%d,command=%d" % tuple(per_minute_delta)
         message += performance_data(perf_data, ([(per_minute_delta[0], "total", warning, critical), (per_minute_delta[1], "insert"),
-                    (per_minute_delta[2], "query"), (per_minute_delta[3], "update"), (per_minute_delta[5], "delete"),
+                    (per_minute_delta[2], "query"), (per_minute_delta[3], "update"), (per_minute_delta[4], "delete"),
                     (per_minute_delta[5], "getmore"), (per_minute_delta[6], "command")]))
         return check_levels(per_minute_delta[0], warning, critical, message)
     else:
         return exit_with_general_critical("problem reading data from temp file")
 
 
-def check_current_lock(con, host, warning, critical, perf_data):
+def check_current_lock(con, host, port, warning, critical, perf_data):
     """ A function to get current lock percentage and not a global one, as check_lock function does"""
     warning = warning or 10
     critical = critical or 30
@@ -1140,7 +1339,7 @@ def check_current_lock(con, host, warning, critical, perf_data):
     lockTime = float(data['globalLock']['lockTime'])
     totalTime = float(data['globalLock']['totalTime'])
 
-    err, delta = maintain_delta([totalTime, lockTime], host, "locktime")
+    err, delta = maintain_delta([totalTime, lockTime], host, port, "locktime")
     if err == 0:
         lock_percentage = delta[2] / delta[1] * 100     # lockTime/totalTime*100
         message = "Current Lock Percentage: %.2f%%" % lock_percentage
@@ -1150,7 +1349,7 @@ def check_current_lock(con, host, warning, critical, perf_data):
         return exit_with_general_warning("problem reading data from temp file")
 
 
-def check_page_faults(con, host, warning, critical, perf_data):
+def check_page_faults(con, host, port, warning, critical, perf_data):
     """ A function to get page_faults per second from the system"""
     warning = warning or 10
     critical = critical or 30
@@ -1162,7 +1361,7 @@ def check_page_faults(con, host, warning, critical, perf_data):
         # page_faults unsupported on the underlaying system
         return exit_with_general_critical("page_faults unsupported on the underlaying system")
 
-    err, delta = maintain_delta([page_faults], host, "page_faults")
+    err, delta = maintain_delta([page_faults], host, port, "page_faults")
     if err == 0:
         page_faults_ps = delta[1] / delta[0]
         message = "Page faults : %.2f ps" % page_faults_ps
@@ -1172,7 +1371,7 @@ def check_page_faults(con, host, warning, critical, perf_data):
         return exit_with_general_warning("problem reading data from temp file")
 
 
-def check_asserts(con, host, warning, critical, perf_data):
+def check_asserts(con, host, port, warning, critical, perf_data):
     """ A function to get asserts from the system"""
     warning = warning or 1
     critical = critical or 10
@@ -1187,7 +1386,7 @@ def check_asserts(con, host, warning, critical, perf_data):
     user = asserts['user']
     rollovers = asserts['rollovers']
 
-    err, delta = maintain_delta([regular, warning_asserts, msg, user, rollovers], host, "asserts")
+    err, delta = maintain_delta([regular, warning_asserts, msg, user, rollovers], host, port, "asserts")
 
     if err == 0:
         if delta[5] != 0:
@@ -1221,7 +1420,7 @@ def get_stored_primary_server_name(db):
     return stored_primary_server
 
 
-def check_replica_primary(con, host, warning, critical, perf_data, replicaset):
+def check_replica_primary(con, host, warning, critical, perf_data, replicaset, mongo_version):
     """ A function to check if the primary server of a replica set has changed """
     if warning is None and critical is None:
         warning = 1
@@ -1244,7 +1443,10 @@ def check_replica_primary(con, host, warning, critical, perf_data, replicaset):
         saved_primary = "None"
     if current_primary != saved_primary:
         last_primary_server_record = {"server": current_primary}
-        db.last_primary_server.update({"_id": "last_primary"}, {"$set": last_primary_server_record}, upsert=True, safe=True)
+        if mongo_version == 2:
+            db.last_primary_server.update({"_id": "last_primary"}, {"$set": last_primary_server_record}, upsert=True)
+        else:
+            db.last_primary_server.update_one({"_id": "last_primary"}, {"$set": last_primary_server_record}, upsert=True)
         message = "Primary server has changed from %s to %s" % (saved_primary, current_primary)
         primary_status = 1
     return check_levels(primary_status, warning, critical, message)
@@ -1266,9 +1468,9 @@ def check_page_faults(con, sample_time, warning, critical, perf_data):
 
         try:
             #on linux servers only
-            page_faults = (int(data2['extra_info']['page_faults']) - int(data1['extra_info']['page_faults'])) / sample_time
+            page_faults = (int(data2['extra_info']['page_faults']) - int(data1['extra_info']['page_faults'])) // sample_time
         except KeyError:
-            print "WARNING - Can't get extra_info.page_faults counter from MongoDB"
+            print("WARNING - Can't get extra_info.page_faults counter from MongoDB")
             sys.exit(1)
 
         message = "Page Faults: %i" % (page_faults)
@@ -1276,7 +1478,7 @@ def check_page_faults(con, sample_time, warning, critical, perf_data):
         message += performance_data(perf_data, [(page_faults, "page_faults", warning, critical)])
         check_levels(page_faults, warning, critical, message)
 
-    except Exception, e:
+    except Exception as e:
         exit_with_general_critical(e)
 
 
@@ -1292,35 +1494,35 @@ def chunks_balance(con, database, collection, warning, critical):
             shards = col.distinct("shard")
 
         except:
-            print "WARNING - Can't get chunks infos from MongoDB"
+            print("WARNING - Can't get chunks infos from MongoDB")
             sys.exit(1)
 
         if nscount == 0:
-            print "WARNING - Namespace %s is not sharded" % (nsfilter)
+            print("WARNING - Namespace %s is not sharded" % (nsfilter))
             sys.exit(1)
 
-        avgchunksnb = nscount / len(shards)
-        warningnb = avgchunksnb * warning / 100
-        criticalnb = avgchunksnb * critical / 100
+        avgchunksnb = nscount // len(shards)
+        warningnb = avgchunksnb * warning // 100
+        criticalnb = avgchunksnb * critical // 100
 
         for shard in shards:
             delta = abs(avgchunksnb - col.find({"ns": nsfilter, "shard": shard}).count())
             message = "Namespace: %s, Shard name: %s, Chunk delta: %i" % (nsfilter, shard, delta)
 
             if delta >= criticalnb and delta > 0:
-                print "CRITICAL - Chunks not well balanced " + message
+                print("CRITICAL - Chunks not well balanced " + message)
                 sys.exit(2)
             elif delta >= warningnb  and delta > 0:
-                print "WARNING - Chunks not well balanced  " + message
+                print("WARNING - Chunks not well balanced  " + message)
                 sys.exit(1)
 
-        print "OK - Chunks well balanced across shards"
+        print("OK - Chunks well balanced across shards")
         sys.exit(0)
 
-    except Exception, e:
+    except Exception as e:
         exit_with_general_critical(e)
 
-    print "OK - Chunks well balanced across shards"
+    print("OK - Chunks well balanced across shards")
     sys.exit(0)
 
 
@@ -1336,7 +1538,7 @@ def check_connect_primary(con, warning, critical, perf_data):
             data = con.admin.command(son.SON([('isMaster', 1)]))
 
         if data['ismaster'] == True:
-            print "OK - This server is primary"
+            print("OK - This server is primary")
             return 0
 
         phost = data['primary'].split(':')[0]
@@ -1354,17 +1556,17 @@ def check_connect_primary(con, warning, critical, perf_data):
 
         return check_levels(pconn_time, warning, critical, message)
 
-    except Exception, e:
+    except Exception as e:
         return exit_with_general_critical(e)
 
 
 def check_collection_state(con, database, collection):
     try:
         con[database][collection].find_one()
-        print "OK - Collection %s.%s is reachable " % (database, collection)
+        print("OK - Collection %s.%s is reachable " % (database, collection))
         return 0
 
-    except Exception, e:
+    except Exception as e:
         return exit_with_general_critical(e)
 
 
@@ -1376,14 +1578,18 @@ def check_row_count(con, database, collection, warning, critical, perf_data):
 
         return check_levels(count, warning, critical, message)
 
-    except Exception, e:
+    except Exception as e:
         return exit_with_general_critical(e)
 
 
-def build_file_name(host, action):
+def build_file_name(host, port, action):
     #done this way so it will work when run independently and from shell
     module_name = re.match('(.*//*)*(.*)\..*', __file__).group(2)
-    return "/tmp/" + module_name + "_data/" + host + "-" + action + ".data"
+
+    if (port == 27017):
+        return "/tmp/" + module_name + "_data/" + host + "-" + action + ".data"
+    else:
+        return "/tmp/" + module_name + "_data/" + host + "-" + str(port) + "-" + action + ".data"
 
 
 def ensure_dir(f):
@@ -1396,7 +1602,7 @@ def write_values(file_name, string):
     f = None
     try:
         f = open(file_name, 'w')
-    except IOError, e:
+    except IOError as e:
         #try creating
         if (e.errno == 2):
             ensure_dir(file_name)
@@ -1415,11 +1621,11 @@ def read_values(file_name):
         data = f.read()
         f.close()
         return 0, data
-    except IOError, e:
+    except IOError as e:
         if (e.errno == 2):
             #no previous data
             return 1, ''
-    except Exception, e:
+    except Exception as e:
         return 2, None
 
 
@@ -1435,8 +1641,8 @@ def calc_delta(old, new):
     return 0, delta
 
 
-def maintain_delta(new_vals, host, action):
-    file_name = build_file_name(host, action)
+def maintain_delta(new_vals, host, port, action):
+    file_name = build_file_name(host, port, action)
     err, data = read_values(file_name)
     old_vals = data.split(';')
     new_vals = [str(int(time.time()))] + new_vals
@@ -1457,8 +1663,8 @@ def replication_get_time_diff(con):
         col = 'oplog.$main'
     firstc = local[col].find().sort("$natural", 1).limit(1)
     lastc = local[col].find().sort("$natural", -1).limit(1)
-    first = firstc.next()
-    last = lastc.next()
+    first = next(firstc)
+    last = next(lastc)
     tfirst = first["ts"]
     tlast = last["ts"]
     delta = tlast.time - tfirst.time
